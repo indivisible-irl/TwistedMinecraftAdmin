@@ -84,13 +84,23 @@ public class Server
     //// public methods
 
     /**
+     * Check whether the supplied folder is a valid Minecraft Server
+     * 
+     * @return
+     */
+    public boolean isServer()
+    {
+        return hasProperties();
+    }
+
+    /**
      * Test whether the Server has a Properties file (and has read access).
      * 
      * @return
      */
     public boolean hasProperties()
     {
-        return properties != null;
+        return properties != null && properties.hasSettings();
     }
 
     /**
@@ -100,7 +110,35 @@ public class Server
      */
     public boolean hasInfo()
     {
-        return info != null;
+        return info != null && info.hasSettings();
+    }
+
+    /**
+     * Access the Server's Properties
+     * 
+     * @return
+     */
+    public ServerProperties getProperties()
+    {
+        if (hasProperties())
+        {
+            return properties;
+        }
+        else
+        {
+            System.out.println(" === No properties found.");
+            return null;
+        }
+    }
+
+    /**
+     * Access the Server's Info
+     * 
+     * @return
+     */
+    public ServerInfo getInfo()
+    {
+        return info;
     }
 
     /**
@@ -132,7 +170,7 @@ public class Server
      * 
      * @return
      */
-    public boolean testForJar()
+    public boolean hasJar()
     {
         return !getJars().isEmpty();
     }
