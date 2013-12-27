@@ -14,12 +14,13 @@ public class ServerInfo
 
     //// data
 
-    private static final String NICKNAME = "nickname";
-    private static final String VERSION = "version";
-    private static final String AUTOSTART = "autostart";
-    private static final String RESTART = "auto-restart";
-    private static final String SHOW_BACKEND = "show-in-backend";
-    private static final String SHOW_WEB = "show-in-web";
+    private static final String NICKNAME = "server-nickname";
+    private static final String VERSION = "minecraft-version";
+    private static final String STARTUP_SCRIPT = "startup-script-name";
+    private static final String AUTOSTART = "do-autostart";
+    private static final String RESTART = "do-auto-restart";
+    private static final String SHOW_BACKEND = "do-show-in-backend";
+    private static final String SHOW_WEB = "do-show-in-web";
 
     //ASK save java parameters in server.info?
     //ANS no. let's make an improved start.sh for easier manual start too.
@@ -60,6 +61,16 @@ public class ServerInfo
     public String getVersion()
     {
         return getRawProperty(VERSION);
+    }
+
+    /**
+     * Get the custom name for the startup file for the Server.
+     * 
+     * @return
+     */
+    public String getStartupScriptName()
+    {
+        return getRawProperty(STARTUP_SCRIPT);
     }
 
     /**
