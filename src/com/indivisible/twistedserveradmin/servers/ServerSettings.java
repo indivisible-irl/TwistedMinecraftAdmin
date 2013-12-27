@@ -17,7 +17,7 @@ public class ServerSettings
 
     //// data
 
-    protected Map<String, String> properties;
+    protected Map<String, String> settings = null;
 
 
     //// constructor & init
@@ -29,8 +29,9 @@ public class ServerSettings
      *        Settings file path
      * @throws IOException
      */
-    public ServerSettings(String propsFilePath) throws IOException
+    protected ServerSettings(String propsFilePath) throws IOException
     {
+        System.out.println("   == Reading " + propsFilePath);
         collectProperties(propsFilePath);
     }
 
@@ -43,9 +44,10 @@ public class ServerSettings
     private void collectProperties(String propsFilePath) throws IOException
     {
         FileIterator iter = new FileIterator(propsFilePath);
-        properties = new HashMap<String, String>();
+        settings = new HashMap<String, String>();
         String line;
         int equalsLoc;
+        boolean hasRunOnce = false;
         while (iter.hasNext())
         {
             line = iter.next().trim();
@@ -61,15 +63,30 @@ public class ServerSettings
             equalsLoc = line.indexOf("=");
             if (equalsLoc != -1)
             {
-                properties.put(line.substring(0, equalsLoc).trim(),
-                               line.substring(equalsLoc + 1).trim());
+                settings.put(line.substring(0, equalsLoc).trim(),
+                             line.substring(equalsLoc + 1).trim());
+                hasRunOnce = true;
             }
+        }
+        if (!hasRunOnce)
+        {
+            System.out.println(" === Error: Never parsed a single line...");
         }
         iter.close();
     }
 
 
     //// public methods
+
+    /**
+     * Verify that there are settings saved
+     * 
+     * @return
+     */
+    public boolean hasSettings()
+    {
+        return (settings != null && !settings.isEmpty());
+    }
 
     /**
      * Retrieve a single value from the collected settings by key.
@@ -80,14 +97,14 @@ public class ServerSettings
      */
     public String getRawProperty(String propertyName)
     {
-        if (properties == null || properties.isEmpty())
+        if (settings == null || settings.isEmpty())
         {
             System.out.println(" === Properties not collected / set");
             return null;
         }
         else
         {
-            return properties.get(propertyName);
+            return settings.get(propertyName);
         }
     }
 
