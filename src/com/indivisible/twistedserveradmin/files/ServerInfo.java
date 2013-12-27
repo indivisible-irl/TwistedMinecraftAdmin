@@ -1,4 +1,4 @@
-package com.indivisible.twistedserveradmin.servers;
+package com.indivisible.twistedserveradmin.files;
 
 import java.io.IOException;
 
@@ -15,13 +15,14 @@ public class ServerInfo
     //// data
 
     private static final String NICKNAME = "nickname";
+    private static final String VERSION = "version";
     private static final String AUTOSTART = "autostart";
     private static final String RESTART = "auto-restart";
     private static final String SHOW_BACKEND = "show-in-backend";
     private static final String SHOW_WEB = "show-in-web";
 
     //ASK save java parameters in server.info?
-    // make bash start command here?
+    //ANS no. let's make an improved start.sh for easier manual start too.
 
     //// constructor & init
 
@@ -48,6 +49,17 @@ public class ServerInfo
     public String getNickname()
     {
         return getRawProperty(NICKNAME);
+    }
+
+    /**
+     * Retrieve the Minecraft version this server is based on. Reads from
+     * config file NOT from server instance. May be inaccurate.
+     * 
+     * @return
+     */
+    public String getVersion()
+    {
+        return getRawProperty(VERSION);
     }
 
     /**

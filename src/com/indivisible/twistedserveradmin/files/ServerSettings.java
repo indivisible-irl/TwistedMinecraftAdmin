@@ -1,9 +1,8 @@
-package com.indivisible.twistedserveradmin.servers;
+package com.indivisible.twistedserveradmin.files;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import com.indivisible.twistedserveradmin.files.FileIterator;
 
 /**
  * Parent class to parse a settings file and collect key, value pairs of the
