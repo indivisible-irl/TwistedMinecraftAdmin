@@ -65,10 +65,9 @@ public class ServerProperties
      */
     public String getCleanMOTD()
     {
-        String rawMOTD = getRawMOTD();
-        String unescaped = unescape(rawMOTD);
-        //System.out.println(" === Unescaped: [" + unescaped + "]");
-        return recurseRemoveColor(unescaped);
+        String unescapedMOTD = unescape(getRawMOTD());
+        //System.out.println(" === Unescaped: [" + unescapedMOTD + "]");
+        return recurseRemoveColor(unescapedMOTD);
     }
 
     /**
