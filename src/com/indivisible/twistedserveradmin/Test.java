@@ -1,6 +1,8 @@
 package com.indivisible.twistedserveradmin;
 
 import java.io.IOException;
+import com.indivisible.twistedserveradmin.files.ServerCollector;
+import com.indivisible.twistedserveradmin.servers.Server;
 import com.indivisible.twistedserveradmin.servers.ServerProperties;
 
 
@@ -9,8 +11,30 @@ public class Test
 
     public static void main(String[] args)
     {
-        String testFile = "/home/indiv/dev/twisted/Minecraft/ServerLoop/SERVERS/Minecraft01/server.properties";
+        //testProperties();
+        testServerCollection();
+    }
 
+    private static void testServerCollection()
+    {
+        ServerCollector collector = new ServerCollector(ServerCollector.TEST_ROOTS_PATH);
+        for (Server server : collector.getServers())
+        {
+            ServerProperties props = server.getProperties();
+            if (props.hasSettings())
+            {
+                System.out.println(server.getProperties().getServerName());
+            }
+            else
+            {
+                System.out.println("No props");
+            }
+        }
+    }
+
+    public static void testProperties()
+    {
+        String testFile = "/home/indiv/dev/twisted/Minecraft/ServerLoop/SERVERS/Minecraft01/server.properties";
 
         try
         {
@@ -30,7 +54,6 @@ public class Test
         {
             System.out.println("IOException caught in main thread for file: " + testFile);
         }
-
     }
 
 }
