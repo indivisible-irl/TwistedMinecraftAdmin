@@ -49,7 +49,7 @@ public class FileIterator
             }
             catch (IOException e)
             {
-                System.out.println("Error while retrieving line from file");
+                System.out.println(" === Error while retrieving line from file");
                 return false;
             }
             if (currentLine == null)
@@ -113,7 +113,7 @@ public class FileIterator
         }
         catch (FileNotFoundException e)
         {
-            throw new IOException("Failed to read file: " + sourceFile);
+            throw new IOException(" === Failed to read file: " + sourceFile);
         }
     }
 

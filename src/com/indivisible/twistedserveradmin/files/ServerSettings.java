@@ -30,7 +30,7 @@ public class ServerSettings
      */
     protected ServerSettings(String propsFilePath) throws IOException
     {
-        System.out.println("   == Reading " + propsFilePath);
+        //System.out.println("   == Reading " + propsFilePath);
         collectProperties(propsFilePath);
     }
 

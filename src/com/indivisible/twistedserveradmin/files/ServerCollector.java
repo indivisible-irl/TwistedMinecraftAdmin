@@ -35,7 +35,7 @@ public class ServerCollector
         FileIterator iter = null;
         try
         {
-            System.out.println(String.format(" === Iterating %s", serverRootsListPath));
+            //System.out.println(String.format(" === Iterating %s", serverRootsListPath));
             iter = new FileIterator(serverRootsListPath);
         }
         catch (IOException e)
@@ -82,7 +82,7 @@ public class ServerCollector
             allServers = new ArrayList<Server>();
             for (File folder : rootFolders)
             {
-                System.out.println("    -- Working in: " + folder.getAbsolutePath());
+                //System.out.println("    -- Working in: " + folder.getAbsolutePath());
                 File[] dirs = getDirectories(folder);
                 if (dirs != null && dirs.length > 0)
                 {
@@ -92,8 +92,8 @@ public class ServerCollector
                         server = checkForServer(possibleServer);
                         if (server != null && server.hasProperties())
                         {
-                            System.out.println("Adding server: "
-                                    + server.getProperties().getServerName());
+                            //System.out.println("Adding server: "
+                            //        + server.getProperties().getServerName());
                             allServers.add(server);
                         }
                     }
@@ -106,7 +106,7 @@ public class ServerCollector
         }
         else
         {
-            System.out.println(" === No root folders to work with. Bye bye");
+            System.out.println(" === No root folders to work with. Quitting.");
             System.exit(2);
         }
     }
