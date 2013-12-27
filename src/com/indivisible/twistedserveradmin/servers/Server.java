@@ -5,6 +5,8 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import com.indivisible.twistedserveradmin.files.ServerInfo;
+import com.indivisible.twistedserveradmin.files.ServerProperties;
 
 /**
  * Class to represent a Minecraft folder.
@@ -23,6 +25,7 @@ public class Server
 
     private static final String PROPERTIES_NAME = "server.properties";
     private static final String INFO_NAME = "server.info";
+    private static final String STARTUP_NAME = "start.sh";
 
 
     //// constructor & init
@@ -175,6 +178,17 @@ public class Server
         return !getJars().isEmpty();
     }
 
+    /**
+     * Check if Server has a startup script available
+     * 
+     * @return
+     */
+    public boolean hasStartupScript()
+    {
+        File testFile = new File(getStartupScriptPath());
+        return testFile.exists() && testFile.canRead();
+    }
+
 
     //// private methods
 
@@ -196,6 +210,16 @@ public class Server
     private String getInfoPath()
     {
         return getFilePath(INFO_NAME);
+    }
+
+    /**
+     * Get the path to the Server's start.sh file.
+     * 
+     * @return
+     */
+    private String getStartupScriptPath()
+    {
+        return getFilePath(STARTUP_NAME);
     }
 
     /**
