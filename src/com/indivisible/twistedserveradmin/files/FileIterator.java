@@ -7,20 +7,36 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Iterator;
 
-
+/**
+ * Convenience Class to manage looping through a text file's contents.
+ * 
+ * @author indiv
+ */
 public class FileIterator
         implements Iterator<String>
 {
+
+    //// data
 
     private BufferedReader br;
     private String currentLine;
 
 
+    //// constructor
+
+    /**
+     * Convenience Class to manage looping through a text file's contents.
+     * 
+     * @param sourceFile
+     * @throws IOException
+     */
     public FileIterator(String sourceFile) throws IOException
     {
         openFile(sourceFile);
     }
 
+
+    //// public methods
 
     @Override
     public boolean hasNext()
@@ -34,14 +50,15 @@ public class FileIterator
             catch (IOException e)
             {
                 System.out.println("Error while retrieving line from file");
-                //RET
-                e.printStackTrace();
+                return false;
             }
-
             if (currentLine == null)
             {
-                System.out.println("line reads null");
                 return false;
+            }
+            else if (currentLine.equals(""))
+            {
+                continue;
             }
             else if (currentLine.trim().startsWith("#"))
             {
@@ -60,9 +77,12 @@ public class FileIterator
     @Override
     public void remove()
     {
-        // do nothing
+        // nothing to do
     }
 
+    /**
+     * Close any open file handles.
+     */
     public void close()
     {
         try
@@ -75,6 +95,15 @@ public class FileIterator
         }
     }
 
+
+    //// private methods
+
+    /**
+     * Open a handle to the desired file and queue it for the Buffer
+     * 
+     * @param sourceFile
+     * @throws IOException
+     */
     private void openFile(String sourceFile) throws IOException
     {
         try
