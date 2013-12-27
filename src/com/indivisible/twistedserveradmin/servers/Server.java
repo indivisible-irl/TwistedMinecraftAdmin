@@ -87,6 +87,23 @@ public class Server
     //// public methods
 
     /**
+     * Get the path to the Server's root.
+     * 
+     * @return Returns 'null' if not set.
+     */
+    public String getServerPath()
+    {
+        if (serverRoot != null)
+        {
+            return serverRoot.getAbsolutePath();
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    /**
      * Check whether the supplied folder is a valid Minecraft Server
      * 
      * @return
@@ -187,6 +204,28 @@ public class Server
     {
         File testFile = new File(getStartupScriptPath());
         return testFile.exists() && testFile.canRead();
+    }
+
+    /**
+     * Trigger a Server's start.sh startup script. JVM, screen and other such
+     * configuration and start/stop/restart logic should be written to there.
+     * 
+     * @return
+     */
+    public boolean startServer()
+    {
+        if (hasStartupScript())
+        {
+            //trigger start.sh
+            return true;
+        }
+        else
+        {
+            System.out
+                    .println("   -- Server has no start.sh script or not accessible.\nExpected: "
+                            + getStartupScriptPath());
+            return false;
+        }
     }
 
 
