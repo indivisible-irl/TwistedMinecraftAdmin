@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import com.indivisible.twistedserveradmin.files.ServerInfo;
 import com.indivisible.twistedserveradmin.files.ServerProperties;
+import com.indivisible.twistedserveradmin.query.ServerQuery;
 
 /**
  * Class to represent a Minecraft folder.
@@ -22,10 +23,12 @@ public class Server
     private File serverRoot;
     private ServerProperties properties = null;
     private ServerInfo info = null;
+    private ServerQuery query = null;
 
     private static final String PROPERTIES_NAME = "server.properties";
     private static final String INFO_NAME = "server.info";
-    private static final String STARTUP_NAME = "start.sh";
+    private static final String DEFAULT_STARTUP = "start.sh";
+    private static final int DEFAULT_TIMEOUT = 2250;
 
 
     //// constructor & init
@@ -212,12 +215,39 @@ public class Server
      * 
      * @return
      */
-    public boolean startServer()
+    public boolean start()
     {
         if (hasStartupScript())
         {
-            //trigger start.sh
-            return true;
+            String startupPath = getStartupScriptPath();
+            try
+            {
+                Process process = Runtime.getRuntime().exec(String.format("bash %s",
+                                                                          startupPath));
+                int exitStatus = process.waitFor();
+                if (exitStatus == 0)
+                {
+                    System.out.println(" === Startup completed successfully.");
+                    return true;
+                }
+                else
+                {
+                    System.out.println(" === Startup exited with non zero status code: "
+                            + exitStatus);
+                    return false;
+                }
+            }
+            catch (IOException e)
+            {
+                System.out.println(" === Failed to trigger startup script: "
+                        + startupPath);
+                return false;
+            }
+            catch (InterruptedException e)
+            {
+                System.out.println(" === Startup was interrupted.");
+                return false;
+            }
         }
         else
         {
@@ -225,6 +255,66 @@ public class Server
                     .println("   -- Server has no start.sh script or not accessible.\nExpected: "
                             + getStartupScriptPath());
             return false;
+        }
+    }
+
+    /**
+     * Perform a query on the Server using a default timeout (1.25 secs).
+     * 
+     * @return Returns false on offline or null on failure.
+     */
+    public Boolean performQuery()
+    {
+        return performQuery(DEFAULT_TIMEOUT);
+    }
+
+    /**
+     * Perform a query on the server using a custom timeout
+     * 
+     * @param timeout
+     *        (milliseconds)
+     * @return Returns false on offline or null on failure.
+     */
+    public Boolean performQuery(int timeout)
+    {
+        if (hasProperties())
+        {
+            String addr = properties.getIP();
+            int port = properties.getPort();
+            if (port > 0 && addr != null)
+            {
+                query = new ServerQuery(addr, port, timeout);
+                return query.fetchData();
+            }
+            else
+            {
+                System.out.println(" === Invalid port: " + port);
+                return null;
+            }
+        }
+        else
+        {
+            System.out
+                    .println(" === Server has no properties set to use for ServerQuery");
+            return null;
+        }
+    }
+
+    /**
+     * Get a previously performed ServerQuery.
+     * 
+     * @return
+     */
+    public ServerQuery getQuery()
+    {
+        if (query == null)
+        {
+            System.out.println(" === No ServerQuery to return");
+            return null;
+        }
+        else
+        {
+            return query;
         }
     }
 
@@ -252,13 +342,21 @@ public class Server
     }
 
     /**
-     * Get the path to the Server's start.sh file.
+     * Get the path to the Server's startup file.
      * 
      * @return
      */
-    private String getStartupScriptPath()
+    public String getStartupScriptPath()
     {
-        return getFilePath(STARTUP_NAME);
+        if (hasInfo())
+        {
+            String customScriptName = getInfo().getStartupScriptName();
+            if (customScriptName != null && !customScriptName.equals(""))
+            {
+                return getFilePath(customScriptName);
+            }
+        }
+        return getFilePath(DEFAULT_STARTUP);
     }
 
     /**
