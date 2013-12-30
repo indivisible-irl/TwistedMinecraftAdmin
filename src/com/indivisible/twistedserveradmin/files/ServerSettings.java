@@ -16,6 +16,7 @@ public class ServerSettings
 
     //// data
 
+    private String filePath;
     protected Map<String, String> settings = null;
 
 
@@ -30,7 +31,7 @@ public class ServerSettings
      */
     protected ServerSettings(String propsFilePath) throws IOException
     {
-        //System.out.println("   == Reading " + propsFilePath);
+        filePath = propsFilePath;
         collectProperties(propsFilePath);
     }
 
@@ -47,31 +48,38 @@ public class ServerSettings
         String line;
         int equalsLoc;
         boolean hasRunOnce = false;
-        while (iter.hasNext())
+        try
         {
-            line = iter.next().trim();
-            if (line.startsWith("#"))
+            while (iter.hasNext())
             {
-                continue;
-            }
-            else if (line.equals(""))
-            {
-                continue;
-            }
+                line = iter.next().trim();
+                if (line.startsWith("#"))
+                {
+                    continue;
+                }
+                else if (line.equals(""))
+                {
+                    continue;
+                }
 
-            equalsLoc = line.indexOf("=");
-            if (equalsLoc != -1)
+                equalsLoc = line.indexOf("=");
+                if (equalsLoc != -1)
+                {
+                    settings.put(line.substring(0, equalsLoc).trim(),
+                                 line.substring(equalsLoc + 1).trim());
+                    hasRunOnce = true;
+                }
+            }
+            if (!hasRunOnce)
             {
-                settings.put(line.substring(0, equalsLoc).trim(),
-                             line.substring(equalsLoc + 1).trim());
-                hasRunOnce = true;
+                System.out.println(" === Error: Never parsed a single line: " + filePath);
             }
         }
-        if (!hasRunOnce)
+        finally
         {
-            System.out.println(" === Error: Never parsed a single line...");
+            iter.close();
         }
-        iter.close();
+
     }
 
 
@@ -132,7 +140,7 @@ public class ServerSettings
         {
             String start = name.substring(0, foundIndex);
             String end = name.substring(foundIndex + 2);
-            return recurseRemoveColor(start + end);
+            return recurseRemoveColor(start.concat(end));
         }
     }
 
@@ -142,27 +150,26 @@ public class ServerSettings
      * @param s
      * @return
      */
-    protected String unescape(String s)
+    protected String unescape(String str)
     {
-        int i = 0, len = s.length();
+        int i = 0, len = str.length();
         char c;
         StringBuffer sb = new StringBuffer(len);
         while (i < len)
         {
-            c = s.charAt(i++);
+            c = str.charAt(i++);
             if (c == '\\')
             {
                 if (i < len)
                 {
-                    c = s.charAt(i++);
+                    c = str.charAt(i++);
                     if (c == 'u')
                     {
-                        // TODO: check that 4 more chars exist and are all hex digits
-                        c = (char) Integer.parseInt(s.substring(i, i + 4), 16);
+                        c = (char) Integer.parseInt(str.substring(i, i + 4), 16);
                         i += 4;
-                    } // add other cases here as desired...
+                    }
                 }
-            } // fall through: \ escapes itself, quotes any character but u
+            }
             sb.append(c);
         }
         return sb.toString();
@@ -196,7 +203,7 @@ public class ServerSettings
     /**
      * Convert a value to a boolean.
      * 
-     * @param value
+     * @param propertyKey
      * @return Returns 'null' on failure
      */
     protected Boolean getBool(String propertyKey)
