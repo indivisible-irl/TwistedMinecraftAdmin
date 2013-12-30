@@ -56,7 +56,7 @@ public class ServerProperties
      */
     public String getRawMOTD()
     {
-        return getRawProperty(MOTD);
+        return getString(MOTD);
     }
 
     /**
@@ -79,7 +79,7 @@ public class ServerProperties
      */
     public String getServerName()
     {
-        return getRawProperty(NAME);
+        return getString(NAME);
     }
 
     /**
@@ -100,7 +100,7 @@ public class ServerProperties
      */
     public String getIP()
     {
-        String value = getRawProperty(IP);
+        String value = getString(IP);
         if (testIPv4(value))
         {
             return value;
@@ -140,7 +140,7 @@ public class ServerProperties
      */
     public String getSeed()
     {
-        return getRawProperty(SEED);
+        return getString(SEED);
     }
 
     /**

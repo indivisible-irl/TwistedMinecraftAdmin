@@ -97,13 +97,13 @@ public class ServerSettings
     }
 
     /**
-     * Retrieve a single value from the collected settings by key.
+     * Retrieve a single string value from the collected settings by key.
      * 
      * @param propertyName
      * @return String representation of the setting or null if not exists. May
      *         be empty String if not set.
      */
-    public String getRawProperty(String propertyName)
+    private String getRawProperty(String propertyName)
     {
         if (settings == null || settings.isEmpty())
         {
@@ -146,7 +146,8 @@ public class ServerSettings
     }
 
     /**
-     * Convert unicode escaped Strings to their encoded characters
+     * Convert unicode escaped Strings to their encoded characters and return
+     * full converted string
      * 
      * @param s
      * @return
@@ -177,10 +178,21 @@ public class ServerSettings
     }
 
     /**
+     * Get a string value from the settings. Remember, String may be empty.
+     * 
+     * @param propertyKey
+     * @return String, Returns 'null' on failure.
+     */
+    public String getString(String propertyKey)
+    {
+        return getRawProperty(propertyKey);
+    }
+
+    /**
      * Attempt to convert a String value to an int
      * 
      * @param strNum
-     * @return Returns Integer.MIN_VALUE on failure.
+     * @return int, Returns Integer.MIN_VALUE on failure.
      */
     protected int getInt(String propertyKey)
     {
@@ -205,7 +217,7 @@ public class ServerSettings
      * Convert a value to a boolean.
      * 
      * @param propertyKey
-     * @return Returns 'null' on failure
+     * @return boolean, Returns 'null' on failure
      */
     protected Boolean getBool(String propertyKey)
     {
@@ -231,9 +243,10 @@ public class ServerSettings
     }
 
     /**
+     * Convert and return a long from the settings.
      * 
      * @param propertyKey
-     * @return
+     * @return long, Returns Long.MIN_VALUE on failure.
      */
     public long getLong(String propertyKey)
     {
@@ -252,6 +265,31 @@ public class ServerSettings
         {
             System.out.println(" === Error parsing long: " + value);
             return Long.MIN_VALUE;
+        }
+    }
+
+    /**
+     * Get a float value from the settings.
+     * 
+     * @param propertyKey
+     * @return float, Returns Float.MIN_VALUE on failure.
+     */
+    public float getFloat(String propertyKey)
+    {
+        String value = getRawProperty(propertyKey);
+        if (value == null || value.equals(""))
+        {
+            System.out.println(" === Error reading float: " + propertyKey);
+            return Float.MIN_VALUE;
+        }
+        try
+        {
+            return Float.parseFloat(value);
+        }
+        catch (NumberFormatException e)
+        {
+            System.out.println(" === Unable to convert to float: [" + value + "]");
+            return Float.MIN_VALUE;
         }
     }
 

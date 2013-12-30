@@ -49,7 +49,7 @@ public class ServerInfo
      */
     public String getNickname()
     {
-        return getRawProperty(NICKNAME);
+        return getString(NICKNAME);
     }
 
     /**
@@ -60,7 +60,7 @@ public class ServerInfo
      */
     public String getVersion()
     {
-        return getRawProperty(VERSION);
+        return getString(VERSION);
     }
 
     /**
@@ -70,7 +70,7 @@ public class ServerInfo
      */
     public String getStartupScriptName()
     {
-        return getRawProperty(STARTUP_SCRIPT);
+        return getString(STARTUP_SCRIPT);
     }
 
     /**
