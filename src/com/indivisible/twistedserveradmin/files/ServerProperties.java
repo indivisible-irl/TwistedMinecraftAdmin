@@ -28,6 +28,8 @@ public class ServerProperties
     private static final String DIFFICULTY = "difficulty";
     private static final String PVP = "pvp";
 
+    private static final String DEFAULT_ADDRESS = "37.187.88.25";
+
 
     //// constructor && init
 
@@ -92,7 +94,7 @@ public class ServerProperties
 
     /**
      * Get the IP the server is running on. If not set will be the Game
-     * Server's default address. TODO: Need to retrieve this default address?
+     * Server's default address.
      * 
      * @return
      */
@@ -105,8 +107,8 @@ public class ServerProperties
         }
         else
         {
-            System.out.println(" === Not an IPv4 address");
-            return null;
+            //System.out.println(" === No address set, using default: " + DEFAULT_ADDRESS);
+            return DEFAULT_ADDRESS;
         }
     }
 
