@@ -17,16 +17,24 @@ public class ServerCollector
     private List<Server> allServers;
     private String serverRootsListPath;
 
-    public static String TEST_ROOTS_PATH = "/home/indiv/dev/twisted/Minecraft/ServerLoop/SERVERS/servers.list";
+    public static final String SERVER_LIST = "servers.list";
 
 
     //// constructor & init
 
-    public ServerCollector(String serverRootListPath)
+    public ServerCollector()
     {
-        this.serverRootsListPath = serverRootListPath;
-        initRootFolders();
-        collectServers();
+        this.serverRootsListPath = getServerListFilePath();
+        if (serverRootsListPath != null)
+        {
+            initRootFolders();
+            collectServers();
+        }
+        else
+        {
+            System.out.println(" === No accessible server list. Quitting.");
+            System.exit(2);
+        }
     }
 
     private void initRootFolders()
@@ -40,7 +48,7 @@ public class ServerCollector
         }
         catch (IOException e)
         {
-            System.out.println(" === Error while reading server list: "
+            System.out.println(" === Error while reading server list :: IOException : "
                     + serverRootsListPath);
             System.exit(1);
         }
@@ -121,6 +129,41 @@ public class ServerCollector
 
 
     //// private methods
+
+    /**
+     * Get the folder this jar is located in
+     * 
+     * @return
+     */
+    private File getInstalledFolder()
+    {
+        String path = this.getClass().getProtectionDomain().getCodeSource().getLocation()
+                .getPath();
+        String parentPath = new File(path).getParent();
+        return new File(parentPath);
+    }
+
+    /**
+     * Get the path to the server list file that should contain a list of root
+     * folders containing Minecraft Server instances.
+     * 
+     * @return Returns an absolute path to the server list file or null if not
+     *         exists or cannot read.
+     */
+    private String getServerListFilePath()
+    {
+        File thisFolder = getInstalledFolder();
+        File serverListFile = new File(thisFolder, SERVER_LIST);
+        if (serverListFile.exists() && serverListFile.canRead())
+        {
+            return serverListFile.getAbsolutePath();
+        }
+        else
+        {
+            System.out.println(" === Could not find or read server list");
+            return null;
+        }
+    }
 
     /**
      * Gather all the directories from a folder
