@@ -1,8 +1,9 @@
-package com.indivisible.twistedserveradmin.files;
+package com.indivisible.twistedserveradmin.servers;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import com.indivisible.twistedserveradmin.files.FileIterator;
 
 /**
  * Parent class to parse a settings file and collect key, value pairs of the
@@ -29,10 +30,10 @@ public class ServerSettings
      *        Settings file path
      * @throws IOException
      */
-    protected ServerSettings(String propsFilePath) throws IOException
+    protected ServerSettings(String settingsFilePath) throws IOException
     {
-        filePath = propsFilePath;
-        collectProperties(propsFilePath);
+        filePath = settingsFilePath;
+        collectProperties(settingsFilePath);
     }
 
     /**
@@ -125,7 +126,7 @@ public class ServerSettings
      * @param name
      * @return
      */
-    protected String recurseRemoveColor(String name)
+    protected String recurseRemoveMinecraftColor(String name)
     {
         int foundIndex = name.indexOf("§");
         if (foundIndex == -1)
@@ -134,13 +135,13 @@ public class ServerSettings
         }
         if (foundIndex == 0)
         {
-            return recurseRemoveColor(name.substring(2));
+            return recurseRemoveMinecraftColor(name.substring(2));
         }
         else
         {
             String start = name.substring(0, foundIndex);
             String end = name.substring(foundIndex + 2);
-            return recurseRemoveColor(start.concat(end));
+            return recurseRemoveMinecraftColor(start.concat(end));
         }
     }
 
@@ -150,7 +151,7 @@ public class ServerSettings
      * @param s
      * @return
      */
-    protected String unescape(String str)
+    protected String unescapeUnicodeChars(String str)
     {
         int i = 0, len = str.length();
         char c;
@@ -179,7 +180,7 @@ public class ServerSettings
      * Attempt to convert a String value to an int
      * 
      * @param strNum
-     * @return Returns -1 on failure.
+     * @return Returns Integer.MIN_VALUE on failure.
      */
     protected int getInt(String propertyKey)
     {
@@ -187,7 +188,7 @@ public class ServerSettings
         if (value == null)
         {
             System.out.println(" === Key not exists: [" + propertyKey + "]");
-            return -1;
+            return Integer.MIN_VALUE;
         }
         try
         {
@@ -226,6 +227,31 @@ public class ServerSettings
         {
             System.out.println(" === Error parsing boolean: " + value);
             return null;
+        }
+    }
+
+    /**
+     * 
+     * @param propertyKey
+     * @return
+     */
+    public long getLong(String propertyKey)
+    {
+        String value = getRawProperty(propertyKey);
+        if (value == null)
+        {
+            System.out.println(" === Key not exists [" + propertyKey + "]");
+            return Long.MIN_VALUE;
+        }
+        try
+        {
+            long num = Long.parseLong(value);
+            return num;
+        }
+        catch (NumberFormatException e)
+        {
+            System.out.println(" === Error parsing long: " + value);
+            return Long.MIN_VALUE;
         }
     }
 

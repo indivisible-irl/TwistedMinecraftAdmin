@@ -1,4 +1,4 @@
-package com.indivisible.twistedserveradmin.files;
+package com.indivisible.twistedserveradmin.servers;
 
 import java.io.IOException;
 
@@ -67,9 +67,9 @@ public class ServerProperties
      */
     public String getCleanMOTD()
     {
-        String unescapedMOTD = unescape(getRawMOTD());
+        String unescapedMOTD = unescapeUnicodeChars(getRawMOTD());
         //System.out.println(" === Unescaped: [" + unescapedMOTD + "]");
-        return recurseRemoveColor(unescapedMOTD);
+        return recurseRemoveMinecraftColor(unescapedMOTD);
     }
 
     /**

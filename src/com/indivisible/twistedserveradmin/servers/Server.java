@@ -5,8 +5,6 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import com.indivisible.twistedserveradmin.files.ServerInfo;
-import com.indivisible.twistedserveradmin.files.ServerProperties;
 import com.indivisible.twistedserveradmin.query.ServerQuery;
 
 /**

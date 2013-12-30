@@ -1,4 +1,4 @@
-package com.indivisible.twistedserveradmin.files;
+package com.indivisible.twistedserveradmin.servers;
 
 import java.io.IOException;
 

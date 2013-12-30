@@ -1,11 +1,11 @@
-package com.indivisible.twistedserveradmin.files;
+package com.indivisible.twistedserveradmin.servers;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import com.indivisible.twistedserveradmin.servers.Server;
+import com.indivisible.twistedserveradmin.files.FileIterator;
 
 
 public class ServerCollector
