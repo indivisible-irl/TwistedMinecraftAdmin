@@ -1,4 +1,4 @@
-package com.indivisible.twistedserveradmin.servers;
+package com.indivisible.twistedserveradmin.config;
 
 import java.io.IOException;
 
@@ -9,7 +9,7 @@ import java.io.IOException;
  * 
  */
 public class ServerInfo
-        extends ServerSettings
+        extends Settings
 {
 
     //// data

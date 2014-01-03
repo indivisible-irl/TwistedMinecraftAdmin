@@ -1,4 +1,4 @@
-package com.indivisible.twistedserveradmin.servers;
+package com.indivisible.twistedserveradmin.config;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -12,7 +12,7 @@ import com.indivisible.twistedserveradmin.files.FileIterator;
  * @author indiv
  * 
  */
-public class ServerSettings
+public class Settings
 {
 
     //// data
@@ -30,7 +30,7 @@ public class ServerSettings
      *        Settings file path
      * @throws IOException
      */
-    protected ServerSettings(String settingsFilePath) throws IOException
+    protected Settings(String settingsFilePath) throws IOException
     {
         filePath = settingsFilePath;
         collectProperties(settingsFilePath);
@@ -199,7 +199,7 @@ public class ServerSettings
         String value = getRawProperty(propertyKey);
         if (value == null)
         {
-            System.out.println(" === Key not exists: [" + propertyKey + "]");
+            //System.out.println(" === Key not exists: [" + propertyKey + "]");
             return Integer.MIN_VALUE;
         }
         try
@@ -208,8 +208,8 @@ public class ServerSettings
         }
         catch (NumberFormatException e)
         {
-            System.out.println(" === Error parsing for int: [" + value + "]");
-            return -1;
+            //System.out.println(" === Error parsing for int: [" + value + "]");
+            return Integer.MIN_VALUE;
         }
     }
 
@@ -217,14 +217,14 @@ public class ServerSettings
      * Convert a value to a boolean.
      * 
      * @param propertyKey
-     * @return boolean, Returns 'null' on failure
+     * @return Boolean, Returns 'null' on failure
      */
     protected Boolean getBool(String propertyKey)
     {
         String value = getRawProperty(propertyKey);
         if (value == null)
         {
-            System.out.println(" === Key not exists: [" + propertyKey + "]");
+            //System.out.println(" === Key not exists: [" + propertyKey + "]");
             return null;
         }
         else if (value.toLowerCase().equals("true"))
@@ -237,7 +237,7 @@ public class ServerSettings
         }
         else
         {
-            System.out.println(" === Error parsing boolean: " + value);
+            //System.out.println(" === Error parsing boolean: " + value);
             return null;
         }
     }
@@ -253,7 +253,7 @@ public class ServerSettings
         String value = getRawProperty(propertyKey);
         if (value == null)
         {
-            System.out.println(" === Key not exists [" + propertyKey + "]");
+            //System.out.println(" === Key not exists [" + propertyKey + "]");
             return Long.MIN_VALUE;
         }
         try
@@ -263,7 +263,7 @@ public class ServerSettings
         }
         catch (NumberFormatException e)
         {
-            System.out.println(" === Error parsing long: " + value);
+            //System.out.println(" === Error parsing long: " + value);
             return Long.MIN_VALUE;
         }
     }
@@ -279,7 +279,7 @@ public class ServerSettings
         String value = getRawProperty(propertyKey);
         if (value == null || value.equals(""))
         {
-            System.out.println(" === Error reading float: " + propertyKey);
+            //System.out.println(" === Error reading float: " + propertyKey);
             return Float.MIN_VALUE;
         }
         try
@@ -288,7 +288,7 @@ public class ServerSettings
         }
         catch (NumberFormatException e)
         {
-            System.out.println(" === Unable to convert to float: [" + value + "]");
+            //System.out.println(" === Unable to convert to float: [" + value + "]");
             return Float.MIN_VALUE;
         }
     }
@@ -310,8 +310,8 @@ public class ServerSettings
             }
             else if (!Character.isDigit(rawIP.charAt(i)))
             {
-                System.out
-                        .println(" === Encountered non digit character in IP: " + rawIP);
+                //System.out
+                //        .println(" === Encountered non digit character in IP: " + rawIP);
                 return false;
             }
         }
