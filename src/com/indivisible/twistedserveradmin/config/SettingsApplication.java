@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 
-public class ApplicationSettings
+public class SettingsApplication
         extends Settings
 {
 
@@ -33,9 +33,9 @@ public class ApplicationSettings
 
     //// constructor & init
 
-    public ApplicationSettings() throws IOException
+    public SettingsApplication() throws IOException
     {
-        super(new File(ApplicationSettings.class.getProtectionDomain().getCodeSource()
+        super(new File(SettingsApplication.class.getProtectionDomain().getCodeSource()
                 .getLocation().getPath()).getParent()
                 + File.separator + FILE_SETTINGS);
         //FIXME ^ that's an awful mess and I don't trust it. Need a better way to organise the Settings family
