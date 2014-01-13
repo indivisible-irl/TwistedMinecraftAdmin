@@ -1,8 +1,10 @@
 package com.indivisible.twistedserveradmin.commands;
 
+import java.util.List;
+
 
 public class ListCmd
-        extends Cmd
+        implements ICmd
 {
 
     //// Help Strings
@@ -13,20 +15,37 @@ public class ListCmd
             + "    Displays a list of all available nicks.\n"
             + "    [string] parameter is optional and used to filter results";
 
+
+    //// constructor
+
+    public ListCmd()
+    {}
+
+
     //// Command methods
 
-    public static void printHelp()
-    {
-        System.out.println(HELP_TEXT);
-    }
-
-    public static String getName()
+    public String getName()
     {
         return NAME;
     }
 
-    public static boolean matchName(String test)
+    public boolean matchName(String test)
     {
         return NAME.equals(test);
     }
+
+    public boolean printHelp(List<String> args)
+    {
+        System.out.println(HELP_TEXT);
+        return true;
+    }
+
+
+    //// invoke
+
+    public boolean invoke(List<String> args)
+    {
+        return false;
+    }
+
 }

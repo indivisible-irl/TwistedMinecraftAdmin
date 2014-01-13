@@ -1,8 +1,10 @@
 package com.indivisible.twistedserveradmin.commands;
 
+import java.util.List;
+
 
 public class KillCmd
-        extends Cmd
+        implements ICmd
 {
 
     //// Help Strings
@@ -14,20 +16,37 @@ public class KillCmd
             + "    Use only for unresponsive servers. World save is not guaranteed.\n"
             + "    Type 'admin online' to see a list of running servers";
 
+
+    //// constructor
+
+    public KillCmd()
+    {}
+
+
     //// Command methods
 
-    public static void printHelp()
-    {
-        System.out.println(HELP_TEXT);
-    }
-
-    public static String getName()
+    public String getName()
     {
         return NAME;
     }
 
-    public static boolean matchName(String test)
+    public boolean matchName(String test)
     {
         return NAME.equals(test);
     }
+
+    public boolean printHelp(List<String> args)
+    {
+        System.out.println(HELP_TEXT);
+        return true;
+    }
+
+
+    //// invoke
+
+    public boolean invoke(List<String> args)
+    {
+        return false;
+    }
+
 }

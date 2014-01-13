@@ -3,22 +3,22 @@ package com.indivisible.twistedserveradmin.commands;
 import java.util.List;
 
 
-public class StopCmd
+public class StatusCmd
         implements ICmd
 {
 
     //// Help Strings
 
-    private static final String NAME = "stop";
+    private static final String NAME = "status";
 
-    private static final String HELP_TEXT = "Usage :: admin stop <nick>\n"
-            + "    Stops a running server. Does not close the screen.\n"
-            + "    Type 'admin list' to see all available nicks.";
+    private static final String HELP_TEXT = "Usage :: admin status [string]\n"
+            + "    Displays a list of running servers.\n"
+            + "    [string] paramater is optional and used to filter results by nick.";
 
 
     //// constructor
 
-    public StopCmd()
+    public StatusCmd()
     {}
 
 

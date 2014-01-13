@@ -1,9 +1,16 @@
 package com.indivisible.twistedserveradmin.commands;
 
+import java.io.File;
+import java.util.List;
+import javax.tools.JavaFileManager.Location;
+import com.indivisible.twistedserveradmin.servers.ServerCollector;
+
 
 public class HelpCmd
-        extends Cmd
+        implements ICmd
 {
+
+    //// data
 
     private static final String NAME = "help";
 
@@ -16,7 +23,7 @@ public class HelpCmd
             + "  Available commands:\n"
             + "      help     ::  Displays this help or detailed info on commands\n"
             + "      list     ::  Lists all available server nicks (optional filter)\n"
-            + "      online   ::  Displays status and info on running servers (optional filter)\n"
+            + "      status   ::  Displays status and info on servers (optional filter)\n"
             + "      start    ::  Starts an offline server (and screen if necessary)\n"
             + "      stop     ::  Stops a running server.\n"
             + "      restart  ::  Stops and start a running server. Only starts if offline.\n"
@@ -32,82 +39,46 @@ public class HelpCmd
             + "      Email: indivisible@twisted.cat | support@twisted.cat\n"
             + "      Web:   http://twisted.cat";
 
-    //// Command methods 
+    private static final String HELP_SERVER_LIST_NOT_EXISTS = "Error: No server root list found!\n"
+            + "Creating a file called 'servers.list' at this tool's location.\n"
+            + "Please add Server root paths to this file:\n\t%s";
 
-    public static void printHelp()
+    private static final String HELP_SERVER_LIST_EMPTY = "Error: No Server root paths found.\n"
+            + "Please add all paths to the folders containing your Minecraft Servers.\n"
+            + "This file is located at:\n\t%s";
+
+    // collection of all commands registered
+    private List<ICmd> cmds;
+
+
+    //// constructor
+
+    public HelpCmd()
+    {}
+
+    public void setCmds(List<ICmd> cmds)
     {
-        System.out.println(HELP_TEXT);
+        this.cmds = cmds;
     }
 
-    public static String getName()
+    //// Command methods 
+
+    public String getName()
     {
         return NAME;
     }
 
-    public static boolean matchName(String test)
+    public boolean matchName(String test)
     {
         return NAME.equals(test);
     }
 
-    //// public methods
-
-    public static void invokeHelp(String[] args)
+    public boolean printHelp(List<String> args)
     {
-        if (args.length <= 1)
-        {
-            printDefault();
-        }
-        else
-        {
-            String cmdParam = args[1];
-            System.out.println("Invoke help for: " + args[1]);
-            if (cmdParam.equalsIgnoreCase(HelpCmd.NAME))
-            {
-                HelpCmd.printHelp();
-            }
-            else if (cmdParam.equalsIgnoreCase(ListCmd.getName()))
-            {
-                ListCmd.printHelp();
-            }
-            else if (cmdParam.equalsIgnoreCase(OnlineCmd.getName()))
-            {
-                OnlineCmd.printHelp();
-            }
-            else if (cmdParam.equalsIgnoreCase(StartCmd.getName()))
-            {
-                StartCmd.printHelp();
-            }
-            else if (cmdParam.equalsIgnoreCase(StopCmd.getName()))
-            {
-                StopCmd.printHelp();
-            }
-            else if (cmdParam.equalsIgnoreCase(RestartCmd.getName()))
-            {
-                RestartCmd.printHelp();
-            }
-            else if (cmdParam.equalsIgnoreCase(KillCmd.getName()))
-            {
-                KillCmd.printHelp();
-            }
-            else if (cmdParam.equalsIgnoreCase(SaveCmd.getName()))
-            {
-                SaveCmd.printHelp();
-            }
-            else if (cmdParam.equalsIgnoreCase(BackupCmd.getName()))
-            {
-                BackupCmd.printHelp();
-            }
-            else if (cmdParam.equalsIgnoreCase(ScreenCmd.getName()))
-            {
-                ScreenCmd.printHelp();
-            }
-            else
-            {
-                System.out.println("! Invalid argument: " + cmdParam);
-                HelpCmd.printSummary();
-            }
-        }
+        System.out.println(HELP_TEXT);
+        return true;
     }
+
 
     //// print extended help methods
 
@@ -125,6 +96,78 @@ public class HelpCmd
     public static void printInfo()
     {
         System.out.println(HELP_INFO);
+    }
+
+    public static void printErrorOnCmd()
+    {
+        System.out.println("!! Unable to process command correctly.");
+    }
+
+    public static void printServerListNotExists()
+    {
+        String str = String.format(HELP_SERVER_LIST_NOT_EXISTS, getServerListPath());
+        System.out.println(str);
+    }
+
+    public static void printServerListIsEmpty()
+    {
+        String str = String.format(HELP_SERVER_LIST_EMPTY, getServerListPath());
+        System.out.println(str);
+    }
+
+
+    //// invoke
+
+    /**
+     * Return true on successful handling, false if not.
+     */
+    public boolean invoke(List<String> args)
+    {
+        if (args == null || args.size() == 0)
+        {
+            printDefault();
+            return true;
+        }
+        else
+        {
+            ICmd matchingCmd = getCmdByName(args.get(0));
+            if (matchingCmd == null)
+            {
+                printErrorOnCmd();
+                printSummary();
+                return false;
+            }
+            else
+            {
+                args.remove(0);
+                return matchingCmd.printHelp(args);
+            }
+        }
+
+    }
+
+
+    //// private methods
+
+    private ICmd getCmdByName(String name)
+    {
+        for (ICmd cmd : cmds)
+        {
+            if (cmd.matchName(name))
+            {
+                return cmd;
+            }
+        }
+        System.out.println("No Cmd found with the name: " + name);
+        return null;
+    }
+
+    private static String getServerListPath()
+    {
+        String jarPath = Location.class.getProtectionDomain().getCodeSource()
+                .getLocation().getPath();
+        File installFolder = new File(jarPath).getParentFile();
+        return (new File(installFolder, ServerCollector.SERVER_LIST)).getAbsolutePath();
     }
 
 }

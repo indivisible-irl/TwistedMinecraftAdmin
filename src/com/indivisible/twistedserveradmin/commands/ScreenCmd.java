@@ -1,8 +1,10 @@
 package com.indivisible.twistedserveradmin.commands;
 
+import java.util.List;
+
 
 public class ScreenCmd
-        extends Cmd
+        implements ICmd
 {
 
     //// Help Strings
@@ -13,20 +15,37 @@ public class ScreenCmd
     private static final String HELP_TEXT = "Usage :: admin screen <command> [nick]\n"
             + "    Currently not in use.";
 
+
+    //// constructor
+
+    public ScreenCmd()
+    {}
+
+
     //// Command methods
 
-    public static void printHelp()
-    {
-        System.out.println(HELP_TEXT);
-    }
-
-    public static String getName()
+    public String getName()
     {
         return NAME;
     }
 
-    public static boolean matchName(String test)
+    public boolean matchName(String test)
     {
         return NAME.equals(test);
     }
+
+    public boolean printHelp(List<String> args)
+    {
+        System.out.println(HELP_TEXT);
+        return true;
+    }
+
+
+    //// invoke
+
+    public boolean invoke(List<String> args)
+    {
+        return false;
+    }
+
 }
