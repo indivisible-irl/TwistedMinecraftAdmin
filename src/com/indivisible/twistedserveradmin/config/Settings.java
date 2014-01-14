@@ -58,21 +58,33 @@ public class Settings
                 {
                     continue;
                 }
-                else if (line.equals(""))
+                else if (line.isEmpty())
                 {
                     continue;
                 }
-
-                equalsLoc = line.indexOf("=");
-                if (equalsLoc != -1)
+                else
                 {
-                    settings.put(line.substring(0, equalsLoc).trim(),
-                                 line.substring(equalsLoc + 1).trim());
-                    hasRunOnce = true;
+                    equalsLoc = line.indexOf("=");
+                    if (equalsLoc != -1)
+                    {
+                        String key = line.substring(0, equalsLoc).trim();
+                        String prop;
+                        try
+                        {
+                            prop = line.substring(equalsLoc + 1).trim();
+                        }
+                        catch (IndexOutOfBoundsException e)
+                        {
+                            prop = "";
+                        }
+                        settings.put(key, prop);
+                        hasRunOnce = true;
+                    }
                 }
             }
             if (!hasRunOnce)
             {
+                //TODO: count lines added and return an int instead
                 System.out.println(" === Error: Never parsed a single line: " + filePath);
             }
         }
@@ -112,6 +124,7 @@ public class Settings
         }
         else
         {
+            // null if no key, empty String if not set
             return settings.get(propertyName);
         }
     }
@@ -120,8 +133,9 @@ public class Settings
     //// protected methods
 
     /**
-     * Recursive method to strip out colour codes from the MOTD. Borrowed from
-     * my MCServerPing application. (TODO merge its functionality into this)
+     * Recursive method to strip out colour codes from the MOTD.<br/>
+     * Borrowed from my MCServerPing application.<br/>
+     * (TODO: merge its functionality into this)
      * 
      * @param name
      * @return
@@ -149,7 +163,7 @@ public class Settings
      * Convert unicode escaped Strings to their encoded characters and return
      * full converted string
      * 
-     * @param s
+     * @param
      * @return
      */
     protected String unescapeUnicodeChars(String str)
@@ -204,7 +218,8 @@ public class Settings
         }
         try
         {
-            return Integer.parseInt(value);
+            int val = Integer.parseInt(value);
+            return val;
         }
         catch (NumberFormatException e)
         {
@@ -284,7 +299,8 @@ public class Settings
         }
         try
         {
-            return Float.parseFloat(value);
+            float num = Float.parseFloat(value);
+            return num;
         }
         catch (NumberFormatException e)
         {
@@ -310,8 +326,7 @@ public class Settings
             }
             else if (!Character.isDigit(rawIP.charAt(i)))
             {
-                //System.out
-                //        .println(" === Encountered non digit character in IP: " + rawIP);
+                //System.out.println(" === Encountered non digit character in IP: " + rawIP);
                 return false;
             }
         }

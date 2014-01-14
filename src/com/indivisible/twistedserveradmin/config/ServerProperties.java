@@ -15,7 +15,7 @@ public class ServerProperties
 
     //// data
 
-    //TODO Test if all server types use same names (vanilla, bukkit, spiggot etc) 
+    //TODO: Test if all server types use same names (vanilla, bukkit, spiggot etc) 
     private static final String KEY_MOTD = "motd";
     private static final String KEY_NAME = "server-name";
     private static final String KEY_PORT = "server-port";
@@ -28,16 +28,16 @@ public class ServerProperties
     private static final String KEY_DIFFICULTY = "difficulty";
     private static final String KEY_PVP = "pvp";
 
-    private static final String DEFAULT_ADDRESS = "37.187.88.25"; //TODO grab AppSettings default
     private static final String DEFAULT_MOTD = "-= No MOTD =-";
     private static final String DEFAULT_NAME = "-= No Name =-";
+    private static final String DEFAULT_IP = "localhost";
     private static final int DEFAULT_PORT = 25565;
     private static final boolean DEFAULT_QUERY_ENABLED = false;
     private static final String DEFAULT_SEED = "-= No Seed =-";
     private static final boolean DEFAULT_WHITELISTED = false;
-    private static final boolean DEFAUL_ONLINE = false;
-    private static final boolean DEFAUL_PVP_ENABLED = true;
-    private static final int DEFAULT_DIFFICULTY = 1;
+    private static final boolean DEFAULT_ONLINE = true;
+    private static final boolean DEFAULT_PVP_ENABLED = true;
+    private static final int DEFAULT_DIFFICULTY = -1;
 
 
     //// constructor && init
@@ -134,7 +134,7 @@ public class ServerProperties
         String ip = getString(KEY_IP);
         if (ip == null || ip.equals(""))
         {
-            return DEFAULT_ADDRESS;
+            return DEFAULT_IP;
         }
         else if (testIPv4(ip))
         {
@@ -142,7 +142,7 @@ public class ServerProperties
         }
         else
         {
-            return DEFAULT_ADDRESS;
+            return DEFAULT_IP;
         }
     }
 
@@ -185,6 +185,7 @@ public class ServerProperties
      */
     public String getSeed()
     {
+        //TODO: if (online && query) getSeed()
         String seed = getString(KEY_SEED);
         if (seed == null || seed.equals(""))
         {
@@ -223,7 +224,7 @@ public class ServerProperties
         Boolean bool = getBool(KEY_ONLINE_MODE);
         if (bool == null)
         {
-            return DEFAUL_ONLINE;
+            return DEFAULT_ONLINE;
         }
         return bool;
     }
@@ -239,7 +240,7 @@ public class ServerProperties
         Boolean bool = getBool(KEY_PVP);
         if (bool == null)
         {
-            return DEFAUL_PVP_ENABLED;
+            return DEFAULT_PVP_ENABLED;
         }
         return bool;
     }

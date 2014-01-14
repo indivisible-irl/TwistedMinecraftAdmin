@@ -1,0 +1,25 @@
+## server.info -- Supplementary server configuration file
+##   For use with TwistedMinecraftAdmin program written by indivisible.
+##   Should be included in the root of all Minecraft Server instances.
+##   (May move to a json or yaml file format in the future. API will be unaffected, as expected.)
+##
+## All key, value pairs must be separated by a '=' character. Do not use '=' anywhere else (for now).
+##
+
+# Nickname for the server to be used in most situations (cmd line id, screen name etc)
+server-nickname = DefaultServer01
+
+# Version of Minecraft the Server is based off. Try to keep up-to-date. Used for Server display grouping when server offline
+minecraft-version = 9.9.9
+
+# Name of the startup script. Defaults to 'start.sh'. Must be located in Server's instance folder.
+startup-script = start.sh
+
+# How should this Server be treated when performing batch Server operations? (true/false)
+auto-start = false
+auto-stop = false
+auto-restart = false
+
+# Should this Server's status be included when invoking the default Server status display?
+show-in-console = true
+show-in-api = false

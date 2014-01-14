@@ -2,6 +2,7 @@ package com.indivisible.twistedserveradmin.config;
 
 import java.io.File;
 import java.io.IOException;
+import javax.tools.JavaFileManager.Location;
 
 
 public class SettingsApplication
@@ -35,10 +36,7 @@ public class SettingsApplication
 
     public SettingsApplication() throws IOException
     {
-        super(new File(SettingsApplication.class.getProtectionDomain().getCodeSource()
-                .getLocation().getPath()).getParent()
-                + File.separator + FILE_SETTINGS);
-        //FIXME ^ that's an awful mess and I don't trust it. Need a better way to organise the Settings family
+        super(getApplicationSettingstPath());
     }
 
 
@@ -127,5 +125,16 @@ public class SettingsApplication
             return DEFAULT_SERVER_IP;
         }
         return defaultIP;
+    }
+
+
+    //// private methods
+
+    private static String getApplicationSettingstPath()
+    {
+        String jarPath = Location.class.getProtectionDomain().getCodeSource()
+                .getLocation().getPath();
+        File installFolder = new File(jarPath).getParentFile();
+        return (new File(installFolder, FILE_SETTINGS)).getAbsolutePath();
     }
 }

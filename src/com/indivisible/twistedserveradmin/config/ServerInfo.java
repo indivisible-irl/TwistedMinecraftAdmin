@@ -16,14 +16,22 @@ public class ServerInfo
 
     private static final String NICKNAME = "server-nickname";
     private static final String VERSION = "minecraft-version";
-    private static final String STARTUP_SCRIPT = "startup-script-name";
-    private static final String AUTOSTART = "autostart";
-    private static final String RESTART = "auto-restart";
-    private static final String SHOW_BACKEND = "show-in-backend";
-    private static final String SHOW_API = "show-in-api";
+    private static final String STARTUP_SCRIPT = "startup-script";
+    private static final String AUTO_START = "auto-start";
+    private static final String AUTO_STOP = "auto-stop";
+    private static final String AUTO_RESTART = "auto-restart";
+    private static final String SHOW_IN_CONSOLE = "show-in-console";
+    private static final String SHOW_IN_API = "show-in-api";
 
-    //ASK save java parameters in server.info?
-    //ANS no. let's make an improved start.sh for easier manual start too.
+    private static final String DEFAULT_NICKNAME = "no nickname";
+    private static final String DEFAULT_VERSION = "no vers";
+    private static final String DEFAULT_STARTUP_SCRIPT = "start.sh";
+    private static final boolean DEFAULT_AUTO_START = false;
+    private static final boolean DEFAULT_AUTO_STOP = false;
+    private static final boolean DEFAULT_AUTO_RESTART = false;
+    private static final boolean DEFAULT_SHOW_IN_CONSOLE = true;
+    private static final boolean DEFAULT_SHOW_IN_API = false;
+
 
     //// constructor & init
 
@@ -49,18 +57,28 @@ public class ServerInfo
      */
     public String getNickname()
     {
-        return getString(NICKNAME);
+        String nick = getString(NICKNAME);
+        if (nick == null || nick.equals(""))
+        {
+            return DEFAULT_NICKNAME;
+        }
+        return nick;
     }
 
     /**
-     * Retrieve the Minecraft version this server is based on. Reads from
-     * config file NOT from server instance. May be inaccurate.
+     * Retrieve the Minecraft version this server is based on.<br/>
+     * Reads from config file NOT from server instance. May be inaccurate.
      * 
      * @return
      */
     public String getVersion()
     {
-        return getString(VERSION);
+        String vers = getString(VERSION);
+        if (vers == null || vers.isEmpty())
+        {
+            return DEFAULT_VERSION;
+        }
+        return vers;
     }
 
     /**
@@ -70,7 +88,12 @@ public class ServerInfo
      */
     public String getStartupScriptName()
     {
-        return getString(STARTUP_SCRIPT);
+        String startup = getString(STARTUP_SCRIPT);
+        if (startup == null || startup.isEmpty())
+        {
+            return DEFAULT_STARTUP_SCRIPT;
+        }
+        return startup;
     }
 
     /**
@@ -78,9 +101,29 @@ public class ServerInfo
      * 
      * @return
      */
-    public Boolean doAutostart()
+    public boolean doAutoStart()
     {
-        return getBool(AUTOSTART);
+        Boolean bool = getBool(AUTO_START);
+        if (bool == null)
+        {
+            return DEFAULT_AUTO_START;
+        }
+        return bool;
+    }
+
+    /**
+     * Get whether this Server should be started when doing a batch stop.
+     * 
+     * @return
+     */
+    public boolean doAutoStop()
+    {
+        Boolean bool = getBool(AUTO_STOP);
+        if (bool == null)
+        {
+            return DEFAULT_AUTO_STOP;
+        }
+        return bool;
     }
 
     /**
@@ -89,9 +132,14 @@ public class ServerInfo
      * 
      * @return
      */
-    public Boolean doRestart()
+    public boolean doAutoRestart()
     {
-        return getBool(RESTART);
+        Boolean bool = getBool(AUTO_RESTART);
+        if (bool == null)
+        {
+            return DEFAULT_AUTO_RESTART;
+        }
+        return bool;
     }
 
     /**
@@ -100,9 +148,14 @@ public class ServerInfo
      * 
      * @return
      */
-    public Boolean doShowInBackend()
+    public boolean doShowInConsole()
     {
-        return getBool(SHOW_BACKEND);
+        Boolean bool = getBool(SHOW_IN_CONSOLE);
+        if (bool == null)
+        {
+            return DEFAULT_SHOW_IN_CONSOLE;
+        }
+        return bool;
     }
 
     /**
@@ -111,9 +164,14 @@ public class ServerInfo
      * 
      * @return
      */
-    public Boolean doShowInAPI()
+    public boolean doShowInAPI()
     {
-        return getBool(SHOW_API);
+        Boolean bool = getBool(SHOW_IN_API);
+        if (bool == null)
+        {
+            return DEFAULT_SHOW_IN_API;
+        }
+        return bool;
     }
 
 }
