@@ -1,5 +1,6 @@
 package com.indivisible.twistedserveradmin.config;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -41,9 +42,9 @@ public class ServerInfo
      * @param infoFilePath
      * @throws IOException
      */
-    public ServerInfo(String infoFilePath) throws IOException
+    public ServerInfo(File infoFile) throws IOException
     {
-        super(infoFilePath);
+        super(infoFile);
     }
 
 

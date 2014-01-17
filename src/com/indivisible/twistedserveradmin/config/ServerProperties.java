@@ -1,5 +1,6 @@
 package com.indivisible.twistedserveradmin.config;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -49,9 +50,9 @@ public class ServerProperties
      * @param propsFilePath
      * @throws IOException
      */
-    public ServerProperties(String propsFilePath) throws IOException
+    public ServerProperties(File propsFile) throws IOException
     {
-        super(propsFilePath);
+        super(propsFile);
     }
 
 

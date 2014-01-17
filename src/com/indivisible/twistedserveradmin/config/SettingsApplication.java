@@ -3,6 +3,7 @@ package com.indivisible.twistedserveradmin.config;
 import java.io.File;
 import java.io.IOException;
 import javax.tools.JavaFileManager.Location;
+import com.indivisible.twistedserveradmin.files.FileGetter;
 
 
 public class SettingsApplication
@@ -36,7 +37,7 @@ public class SettingsApplication
 
     public SettingsApplication() throws IOException
     {
-        super(getApplicationSettingstPath());
+        super(FileGetter.getApplicationSettingsFile());
     }
 
 

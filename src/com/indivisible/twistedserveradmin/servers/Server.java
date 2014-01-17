@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import com.indivisible.twistedserveradmin.config.ServerInfo;
 import com.indivisible.twistedserveradmin.config.ServerProperties;
+import com.indivisible.twistedserveradmin.files.FileGetter;
 import com.indivisible.twistedserveradmin.query.ServerQuery;
 
 /**
@@ -57,31 +58,33 @@ public class Server
      */
     private void init()
     {
-        String propPath = getPropertiesPath();
-        if (propPath != null)
+        File propsFile = getPropertiesFile();
+        if (propsFile != null && propsFile.exists() && propsFile.canRead())
         {
             try
             {
-                properties = new ServerProperties(propPath);
+                properties = new ServerProperties(propsFile);
             }
             catch (IOException e)
             {
-                System.out.println(" === Error trying to read properties: " + propPath);
+                e.printStackTrace();
             }
         }
         if (properties != null)
         {
-            String infoPath = getInfoPath();
-            if (infoPath != null)
+            File infoFile = getInfoFile();
+            if (infoFile != null && infoFile.exists() && infoFile.canRead())
             {
+
                 try
                 {
-                    info = new ServerInfo(infoPath);
+                    info = new ServerInfo(infoFile);
                 }
                 catch (IOException e)
                 {
-                    System.out.println(" === Error trying to read info: " + infoPath);
+                    e.printStackTrace();
                 }
+
             }
         }
     }
@@ -205,7 +208,7 @@ public class Server
      */
     public boolean hasStartupScript()
     {
-        File testFile = new File(getStartupScriptPath());
+        File testFile = getStartupScriptFile();
         return testFile.exists() && testFile.canRead();
     }
 
@@ -219,41 +222,11 @@ public class Server
     {
         if (hasStartupScript())
         {
-            String startupPath = getStartupScriptPath();
-            try
-            {
-                Process process = Runtime.getRuntime().exec(String.format("bash %s",
-                                                                          startupPath));
-                int exitStatus = process.waitFor();
-                if (exitStatus == 0)
-                {
-                    System.out.println(" === Startup completed successfully.");
-                    return true;
-                }
-                else
-                {
-                    System.out.println(" === Startup exited with non zero status code: "
-                            + exitStatus);
-                    return false;
-                }
-            }
-            catch (IOException e)
-            {
-                System.out.println(" === Failed to trigger startup script: "
-                        + startupPath);
-                return false;
-            }
-            catch (InterruptedException e)
-            {
-                System.out.println(" === Startup was interrupted.");
-                return false;
-            }
+            return true;
         }
         else
         {
-            System.out
-                    .println("   -- Server has no start.sh script or not accessible.\nExpected: "
-                            + getStartupScriptPath());
+            System.out.println("   -- Server has no startup script or not accessible");
             return false;
         }
     }
@@ -322,23 +295,23 @@ public class Server
     //// private methods
 
     /**
-     * Get the path to the Server's properties files.
+     * Get the Server's properties file.
      * 
      * @return
      */
-    private String getPropertiesPath()
+    private File getPropertiesFile()
     {
-        return getFilePath(PROPERTIES_NAME);
+        return FileGetter.getServerInstancePropertiesFile(serverInstanceRoot);
     }
 
     /**
-     * Get the path to the Server's info file.
+     * Get the Server's info file.
      * 
      * @return
      */
-    private String getInfoPath()
+    private File getInfoFile()
     {
-        return getFilePath(INFO_NAME);
+        return FileGetter.getServerInstanceInfoFile(serverInstanceRoot);
     }
 
     /**
@@ -346,39 +319,41 @@ public class Server
      * 
      * @return
      */
-    public String getStartupScriptPath()
+    public File getStartupScriptFile()
     {
         if (hasInfo())
         {
-            String customScriptName = getInfo().getStartupScriptName();
-            if (customScriptName != null && !customScriptName.equals(""))
-            {
-                return getFilePath(customScriptName);
-            }
-        }
-        return getFilePath(DEFAULT_STARTUP);
-    }
-
-    /**
-     * Get an absolute path to a server's file.
-     * 
-     * @param filename
-     * @return Returns 'null' on no file or no read access.
-     */
-    private String getFilePath(String filename)
-    {
-        String filePath = serverInstanceRoot.getAbsolutePath() + File.separator
-                + filename;
-        File test = new File(filePath);
-        if (test.exists() && test.canRead())
-        {
-            return filePath;
+            String startupScriptName = info.getStartupScriptName();
+            return FileGetter.getServerInstanceStartupFile(serverInstanceRoot,
+                                                           startupScriptName);
         }
         else
         {
             return null;
         }
+
     }
+
+    //    /**
+    //     * Get an absolute path to a server's file.
+    //     * 
+    //     * @param filename
+    //     * @return Returns 'null' on no file or no read access.
+    //     */
+    //    private String getFilePath(String filename)
+    //    {
+    //        String filePath = serverInstanceRoot.getAbsolutePath() + File.separator
+    //                + filename;
+    //        File test = new File(filePath);
+    //        if (test.exists() && test.canRead())
+    //        {
+    //            return filePath;
+    //        }
+    //        else
+    //        {
+    //            return null;
+    //        }
+    //    }
 
 
 }

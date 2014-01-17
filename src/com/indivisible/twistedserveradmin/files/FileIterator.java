@@ -1,9 +1,11 @@
 package com.indivisible.twistedserveradmin.files;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Iterator;
 
@@ -30,9 +32,9 @@ public class FileIterator
      * @param sourceFile
      * @throws IOException
      */
-    public FileIterator(String sourceFile) throws IOException
+    public FileIterator(File sourceFile) throws IOException
     {
-        openFile(sourceFile);
+        parseFile(sourceFile);
     }
 
 
@@ -104,12 +106,12 @@ public class FileIterator
      * @param sourceFile
      * @throws IOException
      */
-    private void openFile(String sourceFile) throws IOException
+    private void parseFile(File sourceFile) throws IOException
     {
         try
         {
-            FileInputStream fis = new FileInputStream(sourceFile);
-            br = new BufferedReader(new InputStreamReader(fis));
+            InputStream input = new FileInputStream(sourceFile);
+            br = new BufferedReader(new InputStreamReader(input));
         }
         catch (FileNotFoundException e)
         {

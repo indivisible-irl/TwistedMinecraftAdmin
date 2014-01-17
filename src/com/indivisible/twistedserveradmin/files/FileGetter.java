@@ -88,18 +88,63 @@ public class FileGetter
         }
     }
 
+    /**
+     * Get a Server instance's properties File.<br/>
+     * Returns null if not exists or not accessible.
+     * 
+     * @param serverInstanceRoot
+     * @return
+     */
     public static File getServerInstancePropertiesFile(File serverInstanceRoot)
     {
         return getFileFromDisk(serverInstanceRoot, PROPS_FILENAME);
     }
 
+    /**
+     * Get a Server instance's info file or the default version from root
+     * folder if not exists or not accessible.
+     * 
+     * @param serverInstanceRoot
+     * @return
+     */
     public static File getServerInstanceInfoFile(File serverInstanceRoot)
     {
-        //TODO: getServerInstanceInfoFile
-
-        return null;
+        File info = getFileFromDisk(serverInstanceRoot, INFO_FILENAME);
+        if (info == null)
+        {
+            info = getServerDefaultInfoFile();
+        }
+        return info;
     }
 
+    /**
+     * Get the default Server instance info File from the Application's root
+     * folder.
+     * 
+     * @return
+     */
+    public static File getServerDefaultInfoFile()
+    {
+        return getFileFromRoot(INFO_FILENAME);
+    }
+
+    /**
+     * Get the Server instance's startup script File named according to the
+     * instance's info file.
+     * 
+     * @param serverInstanceRoot
+     * @param startupScriptName
+     * @return
+     */
+    public static File getServerInstanceStartupFile(File serverInstanceRoot,
+                                                    String startupScriptName)
+    {
+        return getFileFromDisk(serverInstanceRoot, startupScriptName);
+    }
+
+    /**
+     * Make sure that all required files exist in the Application's root.
+     */
     public static void ensureRootFilesExist()
     {
         String[] rootFileNames = new String[] {
@@ -111,7 +156,7 @@ public class FileGetter
         for (String filename : rootFileNames)
         {
             File file = new File(rootFolder, filename);
-            System.out.print("  - Testing: " + filename + "...  ");
+            System.out.print("  - Testing " + filename + "...  ");
             if (!testFileExists(file))
             {
                 System.out.println("not exists\n");
@@ -197,6 +242,18 @@ public class FileGetter
         {
             return null;
         }
+    }
+
+    /**
+     * Get a File from the Application's root folder.
+     * 
+     * @param filename
+     * @return
+     */
+    private static File getFileFromRoot(String filename)
+    {
+        File applicationRoot = getApplicationRootFolder();
+        return getFileFromDisk(applicationRoot, filename);
     }
 
     /**

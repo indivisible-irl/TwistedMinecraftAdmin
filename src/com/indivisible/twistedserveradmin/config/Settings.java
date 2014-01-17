@@ -1,5 +1,6 @@
 package com.indivisible.twistedserveradmin.config;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +18,7 @@ public class Settings
 
     //// data
 
-    private String filePath;
+    private File file;
     protected Map<String, String> settings = null;
 
 
@@ -30,10 +31,10 @@ public class Settings
      *        Settings file path
      * @throws IOException
      */
-    protected Settings(String settingsFilePath) throws IOException
+    protected Settings(File settingsFile) throws IOException
     {
-        filePath = settingsFilePath;
-        collectProperties(settingsFilePath);
+        file = settingsFile;
+        collectProperties(settingsFile);
     }
 
     /**
@@ -42,9 +43,9 @@ public class Settings
      * @param propsFilePath
      * @throws IOException
      */
-    private void collectProperties(String propsFilePath) throws IOException
+    private void collectProperties(File settingsFile) throws IOException
     {
-        FileIterator iter = new FileIterator(propsFilePath);
+        FileIterator iter = new FileIterator(settingsFile);
         settings = new HashMap<String, String>();
         String line;
         int equalsLoc;
@@ -85,7 +86,8 @@ public class Settings
             if (!hasRunOnce)
             {
                 //TODO: count lines added and return an int instead
-                System.out.println(" === Error: Never parsed a single line: " + filePath);
+                System.out.println(" === Error: Never parsed a single line: "
+                        + file.getAbsolutePath());
             }
         }
         finally
