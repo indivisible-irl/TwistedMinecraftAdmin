@@ -20,7 +20,7 @@ public class Server
 
     //// data
 
-    private File serverRoot;
+    private File serverInstanceRoot;
     private ServerProperties properties = null;
     private ServerInfo info = null;
     private ServerQuery query = null;
@@ -38,17 +38,17 @@ public class Server
      * 
      * @param serverFolder
      */
-    public Server(File serverFolder)
+    public Server(File serverInstanceFolder)
     {
-        if (serverFolder.canRead() && serverFolder.isDirectory())
+        if (serverInstanceFolder.canRead() && serverInstanceFolder.isDirectory())
         {
-            this.serverRoot = serverFolder;
+            this.serverInstanceRoot = serverInstanceFolder;
             init();
         }
         else
         {
             System.out.println(" === Server folder not accessible or not a directory: "
-                    + serverFolder.getAbsolutePath());
+                    + serverInstanceFolder.getAbsolutePath());
         }
     }
 
@@ -96,9 +96,9 @@ public class Server
      */
     public String getServerPath()
     {
-        if (serverRoot != null)
+        if (serverInstanceRoot != null)
         {
-            return serverRoot.getAbsolutePath();
+            return serverInstanceRoot.getAbsolutePath();
         }
         else
         {
@@ -172,7 +172,7 @@ public class Server
     public List<String> getJars()
     {
         List<String> jars = new ArrayList<String>();
-        File[] jarFiles = serverRoot.listFiles(new FilenameFilter()
+        File[] jarFiles = serverInstanceRoot.listFiles(new FilenameFilter()
             {
 
                 @Override
@@ -367,7 +367,8 @@ public class Server
      */
     private String getFilePath(String filename)
     {
-        String filePath = serverRoot.getAbsolutePath() + File.separator + filename;
+        String filePath = serverInstanceRoot.getAbsolutePath() + File.separator
+                + filename;
         File test = new File(filePath);
         if (test.exists() && test.canRead())
         {
