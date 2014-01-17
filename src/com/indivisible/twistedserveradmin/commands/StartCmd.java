@@ -11,7 +11,8 @@ public class StartCmd
 
     private static final String NAME = "start";
 
-    private static final String HELP_TEXT = "Usage :: admin start <nick>\n"
+    private static final String HELP_SHORT = "Starts an offline server (and screen if necessary).";
+    private static final String HELP_LONG = "Usage :: admin start <nick>\n"
             + "    Starts up a server (if offline) and creates screen if needed.\n"
             + "    Type 'admin list' to see all available nicks.";
 
@@ -34,10 +35,14 @@ public class StartCmd
         return NAME.equals(test);
     }
 
-    public boolean printHelp(List<String> args)
+    public String getShortHelp()
     {
-        System.out.println(HELP_TEXT);
-        return true;
+        return HELP_SHORT;
+    }
+
+    public String getLongHelp(List<String> args)
+    {
+        return HELP_LONG;
     }
 
 

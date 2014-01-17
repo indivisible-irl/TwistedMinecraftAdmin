@@ -2,6 +2,7 @@ package com.indivisible.twistedserveradmin.commands;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 import javax.tools.JavaFileManager.Location;
 import com.indivisible.twistedserveradmin.servers.ServerCollector;
 
@@ -14,24 +15,16 @@ public class HelpCmd
 
     private static final String NAME = "help";
 
-    private static final String HELP_TEXT = "Usage :: admin help [command]\n"
+    private static final String HELP_SHORT = "Displays this help or detailed info on commands.";
+    private static final String HELP_LONG = "Usage :: admin help [command]\n"
             + "    Displays help on Twisted.cat's minecraft admin tool\n"
             + "    [command] parameter is used to display detailed help on the supplied command.\n"
             + "    If no command is entered (or no matching command found) general, summary help is displayed";
 
-    private static final String HELP_SUMMARY = "  Twisted.cat's Minecraft Admin tool.\n"
-            + "  Available commands:\n"
-            + "      help     ::  Displays this help or detailed info on commands\n"
-            + "      list     ::  Lists all available server nicks (optional filter)\n"
-            + "      status   ::  Displays status and info on servers (optional filter)\n"
-            + "      start    ::  Starts an offline server (and screen if necessary)\n"
-            + "      stop     ::  Stops a running server.\n"
-            + "      restart  ::  Stops and start a running server. Only starts if offline.\n"
-            + "      kill     ::  Forcebly kills a running server. Use only on unresponsive servers.\n"
-            + "      save     ::  Saves a running server's world. (Invokes 'save-all')\n"
-            + "      backup   ::  Makes a full backup of a server and saves to approprite directory.\n"
-            + "      screen   ::  Performs actions relating to screen management\n"
-            + "\n  Type 'admin help <command>' for more detailed help on a command and it's usage.";
+    private static final String HELP_CMDS_START = "  Twisted.cat's Minecraft Admin tool.\n"
+            + "  Available commands:\n";
+    private static final String HELP_CMDS_FORMAT = "    %s  ::  %s";
+    private static final String HELP_CMDS_END = "\n  Type 'admin help <command>' for more detailed help on a command and it's usage.";
 
     private static final String HELP_INFO = "\n"
             + "  Written by indivisible for the Twisted.cat Minecraft servers.\n"
@@ -48,7 +41,7 @@ public class HelpCmd
             + "This file is located at:\n\t%s";
 
     // collection of all commands registered
-    private List<ICmd> cmds;
+    private Map<String, ICmd> cmds;
 
 
     //// constructor
@@ -56,7 +49,7 @@ public class HelpCmd
     public HelpCmd()
     {}
 
-    public void setCmds(List<ICmd> cmds)
+    public void setCmds(Map<String, ICmd> cmds)
     {
         this.cmds = cmds;
     }
@@ -73,24 +66,35 @@ public class HelpCmd
         return NAME.equals(test);
     }
 
-    public boolean printHelp(List<String> args)
+    public String getShortHelp()
     {
-        System.out.println(HELP_TEXT);
-        return true;
+        return HELP_SHORT;
+    }
+
+    public String getLongHelp(List<String> args)
+    {
+        return HELP_LONG;
     }
 
 
     //// print extended help methods
 
-    public static void printDefault()
+    public void printDefault()
     {
-        System.out.println(HELP_SUMMARY);
+        printCmdsSummary();
         System.out.println(HELP_INFO);
     }
 
-    public static void printSummary()
+    public void printCmdsSummary()
     {
-        System.out.println(HELP_SUMMARY);
+        System.out.println(HELP_CMDS_START);
+        for (ICmd cmd : cmds.values())
+        {
+            System.out.println(String.format(HELP_CMDS_FORMAT,
+                                             cmd.getName(),
+                                             cmd.getShortHelp()));
+        }
+        System.out.println(HELP_CMDS_END);
     }
 
     public static void printInfo()
@@ -134,13 +138,15 @@ public class HelpCmd
             if (matchingCmd == null)
             {
                 printErrorOnCmd();
-                printSummary();
+                printCmdsSummary();
                 return false;
             }
             else
             {
                 args.remove(0);
-                return matchingCmd.printHelp(args);
+                String cmdHelp = matchingCmd.getLongHelp(args);
+                System.out.println(cmdHelp);
+                return true;
             }
         }
 
@@ -151,12 +157,9 @@ public class HelpCmd
 
     private ICmd getCmdByName(String name)
     {
-        for (ICmd cmd : cmds)
+        if (cmds.containsKey(name))
         {
-            if (cmd.matchName(name))
-            {
-                return cmd;
-            }
+            return cmds.get(name);
         }
         System.out.println("No Cmd found with the name: " + name);
         return null;

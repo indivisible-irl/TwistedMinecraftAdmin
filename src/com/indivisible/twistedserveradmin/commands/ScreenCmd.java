@@ -11,8 +11,8 @@ public class ScreenCmd
 
     private static final String NAME = "screen";
 
-    //TODO: Work out commands and functionality for screen manipulation.
-    private static final String HELP_TEXT = "Usage :: admin screen <command> [nick]\n"
+    private static final String HELP_SHORT = "Performs actions relating to screen management.";
+    private static final String HELP_LONG = "Usage :: admin screen <command> [nick]\n"
             + "    Currently not in use.";
 
 
@@ -34,10 +34,14 @@ public class ScreenCmd
         return NAME.equals(test);
     }
 
-    public boolean printHelp(List<String> args)
+    public String getShortHelp()
     {
-        System.out.println(HELP_TEXT);
-        return true;
+        return HELP_SHORT;
+    }
+
+    public String getLongHelp(List<String> args)
+    {
+        return HELP_LONG;
     }
 
 

@@ -11,7 +11,8 @@ public class StatusCmd
 
     private static final String NAME = "status";
 
-    private static final String HELP_TEXT = "Usage :: admin status [string]\n"
+    private static final String HELP_SHORT = "Displays status and info on servers (optional filter)";
+    private static final String HELP_LONG = "Usage :: admin status [string]\n"
             + "    Displays a list of running servers.\n"
             + "    [string] paramater is optional and used to filter results by nick.";
 
@@ -34,10 +35,14 @@ public class StatusCmd
         return NAME.equals(test);
     }
 
-    public boolean printHelp(List<String> args)
+    public String getShortHelp()
     {
-        System.out.println(HELP_TEXT);
-        return true;
+        return HELP_SHORT;
+    }
+
+    public String getLongHelp(List<String> args)
+    {
+        return HELP_LONG;
     }
 
 

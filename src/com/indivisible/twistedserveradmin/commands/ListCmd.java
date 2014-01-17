@@ -11,7 +11,8 @@ public class ListCmd
 
     private static final String NAME = "list";
 
-    private static final String HELP_TEXT = "Usage :: admin list [string]\n"
+    private static final String HELP_SHORT = "Lists all available server instances (optional filter)";
+    private static final String HELP_LONG = "Usage :: admin list [string]\n"
             + "    Displays a list of all available nicks.\n"
             + "    [string] parameter is optional and used to filter results";
 
@@ -34,10 +35,14 @@ public class ListCmd
         return NAME.equals(test);
     }
 
-    public boolean printHelp(List<String> args)
+    public String getShortHelp()
     {
-        System.out.println(HELP_TEXT);
-        return true;
+        return HELP_SHORT;
+    }
+
+    public String getLongHelp(List<String> args)
+    {
+        return HELP_LONG;
     }
 
 

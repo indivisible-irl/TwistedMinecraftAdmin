@@ -11,7 +11,8 @@ public class RestartCmd
 
     private static final String NAME = "restart";
 
-    private static final String HELP_TEXT = "Usage :: admin restart <nick>\n"
+    private static final String HELP_SHORT = "Restarts a running Sever. (Starts if offline)";
+    private static final String HELP_LONG = "Usage :: admin restart <nick>\n"
             + "    Restarts a running server (or starts if offline).\n"
             + "    Type 'admin online' to see a list of running servers";
 
@@ -34,10 +35,14 @@ public class RestartCmd
         return NAME.equals(test);
     }
 
-    public boolean printHelp(List<String> args)
+    public String getShortHelp()
     {
-        System.out.println(HELP_TEXT);
-        return true;
+        return HELP_SHORT;
+    }
+
+    public String getLongHelp(List<String> args)
+    {
+        return HELP_LONG;
     }
 
 

@@ -11,7 +11,8 @@ public class StopCmd
 
     private static final String NAME = "stop";
 
-    private static final String HELP_TEXT = "Usage :: admin stop <nick>\n"
+    private static final String HELP_SHORT = "Stops a running server instance.";
+    private static final String HELP_LONG = "Usage :: admin stop <nick>\n"
             + "    Stops a running server. Does not close the screen.\n"
             + "    Type 'admin list' to see all available nicks.";
 
@@ -34,10 +35,14 @@ public class StopCmd
         return NAME.equals(test);
     }
 
-    public boolean printHelp(List<String> args)
+    public String getShortHelp()
     {
-        System.out.println(HELP_TEXT);
-        return true;
+        return HELP_SHORT;
+    }
+
+    public String getLongHelp(List<String> args)
+    {
+        return HELP_LONG;
     }
 
 

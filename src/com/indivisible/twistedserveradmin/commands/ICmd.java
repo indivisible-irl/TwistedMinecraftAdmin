@@ -22,6 +22,13 @@ public interface ICmd
     public boolean matchName(String test);
 
     /**
+     * Get a shortened version of Cmd's help.
+     * 
+     * @return
+     */
+    public String getShortHelp();
+
+    /**
      * Print information on usage and syntax for the Cmd.<br/>
      * Returns true if the desired help module was found cleanly. False if not
      * found (default help will be printed)
@@ -29,7 +36,7 @@ public interface ICmd
      * @param args
      * @return
      */
-    public boolean printHelp(List<String> args);
+    public String getLongHelp(List<String> args);
 
     /**
      * Trigger the Cmd's functionality supplying any arguments <br/>

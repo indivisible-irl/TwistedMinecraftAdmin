@@ -1,7 +1,8 @@
 package com.indivisible.twistedserveradmin.commands;
 
-import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class CmdHandeler
@@ -9,7 +10,7 @@ public class CmdHandeler
 
     //// data
 
-    private List<ICmd> cmds = null;
+    private Map<String, ICmd> cmds = null;
     private HelpCmd helpCmd = null;
 
 
@@ -17,19 +18,31 @@ public class CmdHandeler
 
     public CmdHandeler()
     {
-        cmds = new ArrayList<ICmd>();
+        // linked hashmap for both ordered and instant access.
+        cmds = new LinkedHashMap<String, ICmd>();
         helpCmd = new HelpCmd();
+
         // populate with all commands
-        // order of addition should reflect usage for improved performance/response times
-        cmds.add(helpCmd);
-        cmds.add(new StatusCmd());
-        cmds.add(new ListCmd());
-        cmds.add(new ScreenCmd());
-        cmds.add(new StartCmd());
-        cmds.add(new StopCmd());
-        cmds.add(new RestartCmd());
-        cmds.add(new SaveCmd());
-        cmds.add(new BackupCmd());
+        ICmd cmd = null;
+        cmds.put(helpCmd.getName(), helpCmd);
+        cmd = new StatusCmd();
+        cmds.put(cmd.getName(), cmd);
+        cmd = new ListCmd();
+        cmds.put(cmd.getName(), cmd);
+        cmd = new ScreenCmd();
+        cmds.put(cmd.getName(), cmd);
+        cmd = new StartCmd();
+        cmds.put(cmd.getName(), cmd);
+        cmd = new StopCmd();
+        cmds.put(cmd.getName(), cmd);
+        cmd = new RestartCmd();
+        cmds.put(cmd.getName(), cmd);
+        cmd = new SaveCmd();
+        cmds.put(cmd.getName(), cmd);
+        cmd = new BackupCmd();
+        cmds.put(cmd.getName(), cmd);
+        cmd = new PrepCmd();
+        cmds.put(cmd.getName(), cmd);
 
         helpCmd.setCmds(cmds);
     }
@@ -41,7 +54,7 @@ public class CmdHandeler
     {
         if (args == null || args.size() == 0)
         {
-            HelpCmd.printDefault();
+            helpCmd.printDefault();
             return true;
         }
         else
@@ -65,14 +78,11 @@ public class CmdHandeler
 
     private ICmd getCmdByName(String name)
     {
-        for (ICmd cmd : cmds)
+        if (cmds.containsKey(name))
         {
-            if (cmd.matchName(name))
-            {
-                return cmd;
-            }
+            return cmds.get(name);
         }
-        System.out.println("No Cmd found with the name: " + name);
+        System.out.println("!! No Cmd found with the name: " + name);
         return null;
     }
 }

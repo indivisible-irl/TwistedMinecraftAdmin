@@ -11,7 +11,8 @@ public class KillCmd
 
     private static final String NAME = "kill";
 
-    private static final String HELP_TEXT = "Usage :: admin kill <nick>\n"
+    private static final String HELP_SHORT = "Forcebly kills a running server. Use carefully!";
+    private static final String HELP_LONG = "Usage :: admin kill <nick>\n"
             + "    Forcebly kills a running server instance.\n"
             + "    Use only for unresponsive servers. World save is not guaranteed.\n"
             + "    Type 'admin online' to see a list of running servers";
@@ -35,10 +36,14 @@ public class KillCmd
         return NAME.equals(test);
     }
 
-    public boolean printHelp(List<String> args)
+    public String getShortHelp()
     {
-        System.out.println(HELP_TEXT);
-        return true;
+        return HELP_SHORT;
+    }
+
+    public String getLongHelp(List<String> args)
+    {
+        return HELP_LONG;
     }
 
 

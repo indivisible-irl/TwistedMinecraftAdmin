@@ -3,23 +3,23 @@ package com.indivisible.twistedserveradmin.commands;
 import java.util.List;
 
 
-public class SaveCmd
+public class PrepCmd
         implements ICmd
 {
 
     //// Help Strings
 
-    private static final String NAME = "save";
+    private static final String NAME = "prep";
 
-    private static final String HELP_SHORT = "Saves a running server's world. (Invokes 'save-all')";
-    private static final String HELP_LONG = "Usage :: admin save <nick>\n"
-            + "    Saves a servers world and state. (Invokes 'save-all')\n"
-            + "    Type 'admin online' to see a list of running servers";
+    private static final String HELP_SHORT = "Prepare a server instance for use.";
+    private static final String HELP_LONG = "Usage :: admin prep\n"
+            + "    Prepares a directory for use with this Admin tool.\n"
+            + "    Checks for a valid Server instance and creates necessary files.";
 
 
     //// constructor
 
-    public SaveCmd()
+    public PrepCmd()
     {}
 
 
@@ -35,10 +35,12 @@ public class SaveCmd
         return NAME.equals(test);
     }
 
+
     public String getShortHelp()
     {
         return HELP_SHORT;
     }
+
 
     public String getLongHelp(List<String> args)
     {
