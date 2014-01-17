@@ -5,6 +5,8 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.tools.JavaFileManager.Location;
+import com.indivisible.twistedserveradmin.commands.HelpCmd;
 import com.indivisible.twistedserveradmin.files.FileIterator;
 
 
@@ -32,7 +34,7 @@ public class ServerCollector
         }
         else
         {
-            System.out.println(" === No accessible server list. Quitting.");
+            HelpCmd.printServerListNotExists();
             System.exit(2);
         }
     }
@@ -50,7 +52,8 @@ public class ServerCollector
         {
             System.out.println(" === Error while reading server list :: IOException : "
                     + serverRootsListPath);
-            System.exit(1);
+            e.printStackTrace();
+            System.exit(10);
         }
         if (iter != null)
         {
@@ -111,6 +114,7 @@ public class ServerCollector
                     System.out.println("   -- Encountered error getting directories");
                 }
             }
+
         }
         else
         {
@@ -137,10 +141,10 @@ public class ServerCollector
      */
     private File getInstalledFolder()
     {
-        String path = this.getClass().getProtectionDomain().getCodeSource().getLocation()
-                .getPath();
-        String parentPath = new File(path).getParent();
-        return new File(parentPath);
+        String installLocPath = Location.class.getProtectionDomain().getCodeSource()
+                .getLocation().getPath();
+        String parentPath = new File(installLocPath).getParent();
+        return (new File(parentPath));
     }
 
     /**
