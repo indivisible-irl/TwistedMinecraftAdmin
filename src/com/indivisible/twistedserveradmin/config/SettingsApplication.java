@@ -1,8 +1,6 @@
 package com.indivisible.twistedserveradmin.config;
 
-import java.io.File;
 import java.io.IOException;
-import javax.tools.JavaFileManager.Location;
 import com.indivisible.twistedserveradmin.files.FileGetter;
 
 
@@ -22,7 +20,6 @@ public class SettingsApplication
     private static final String DEFAULT_SERVER_IP = "localhost";
 
     // settings' keys' names
-    private static final String FILE_SETTINGS = "settings.cfg";
     private static final String KEY_QUERY_TIMEOUT = "query-timeout";
     private static final String KEY_QUERY_LIFESPAN = "query-lifespan";
     private static final String KEY_MONITOR = "monitor";
@@ -128,14 +125,4 @@ public class SettingsApplication
         return defaultIP;
     }
 
-
-    //// private methods
-
-    private static String getApplicationSettingstPath()
-    {
-        String jarPath = Location.class.getProtectionDomain().getCodeSource()
-                .getLocation().getPath();
-        File installFolder = new File(jarPath).getParentFile();
-        return (new File(installFolder, FILE_SETTINGS)).getAbsolutePath();
-    }
 }
