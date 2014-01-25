@@ -1,6 +1,8 @@
 package com.indivisible.twistedserveradmin.commands;
 
 import java.util.List;
+import com.indivisible.twistedserveradmin.servers.Server;
+import com.indivisible.twistedserveradmin.servers.ServerCollector;
 
 
 public class ListCmd
@@ -15,7 +17,7 @@ public class ListCmd
     private static final String HELP_LONG = "Usage :: admin list [string]\n"
             + "    Displays a list of all available nicks.\n"
             + "    [string] parameter is optional and used to filter results";
-
+    private static final String ERROR_NO_SERVERS = "!! No servers found. Check your 'servers.list' file.";
 
     //// constructor
 
@@ -50,7 +52,23 @@ public class ListCmd
 
     public boolean invoke(List<String> args)
     {
-        return false;
+        //TODO: branch based on args
+        ServerCollector servers = new ServerCollector();
+        if (servers.hasServers())
+        {
+            //String lastVersion = "";
+            System.out.println("Servers:");
+            for (Server server : servers.getServers())
+            {
+                System.out.println("  - " + server.getProperties().getCleanMOTD());
+            }
+            return true;
+        }
+        else
+        {
+            System.out.println(ERROR_NO_SERVERS);
+            return false;
+        }
     }
 
 }
