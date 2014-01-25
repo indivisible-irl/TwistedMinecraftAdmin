@@ -1,10 +1,8 @@
 package com.indivisible.twistedserveradmin.commands;
 
-import java.io.File;
 import java.util.List;
 import java.util.Map;
-import javax.tools.JavaFileManager.Location;
-import com.indivisible.twistedserveradmin.servers.ServerCollector;
+import com.indivisible.twistedserveradmin.files.FileGetter;
 
 
 public class HelpCmd
@@ -109,13 +107,15 @@ public class HelpCmd
 
     public static void printServerListNotExists()
     {
-        String str = String.format(HELP_SERVER_LIST_NOT_EXISTS, getServerListPath());
+        String str = String.format(HELP_SERVER_LIST_NOT_EXISTS, FileGetter
+                .getServerListFile().getAbsoluteFile());
         System.out.println(str);
     }
 
     public static void printServerListIsEmpty()
     {
-        String str = String.format(HELP_SERVER_LIST_EMPTY, getServerListPath());
+        String str = String.format(HELP_SERVER_LIST_EMPTY, FileGetter.getServerListFile()
+                .getAbsoluteFile());
         System.out.println(str);
     }
 
@@ -165,12 +165,5 @@ public class HelpCmd
         return null;
     }
 
-    private static String getServerListPath()
-    {
-        String jarPath = Location.class.getProtectionDomain().getCodeSource()
-                .getLocation().getPath();
-        File installFolder = new File(jarPath).getParentFile();
-        return (new File(installFolder, ServerCollector.SERVER_LIST)).getAbsolutePath();
-    }
 
 }
