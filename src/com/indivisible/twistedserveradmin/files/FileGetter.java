@@ -8,7 +8,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.net.URLDecoder;
+import com.indivisible.twistedserveradmin.servers.Server;
 
 /**
  * Class to handle calculation and testing for necessary files and folders.
@@ -18,6 +20,8 @@ import java.net.URLDecoder;
  */
 public class FileGetter
 {
+
+    //RET: prepare new instance
 
     //// data
 
@@ -73,17 +77,10 @@ public class FileGetter
         {
             return serverListFile;
         }
-        // try to write settings to disk and then return
-        boolean writeSuccess = writeInternalFileToDisk(rootFolder, SERVER_LIST_FILENAME);
-        if (writeSuccess && testFileExists(serverListFile))
-        {
-            return serverListFile;
-        }
         else
         {
             System.out.println("!! Error getting server list file: "
                     + serverListFile.getAbsolutePath());
-            System.exit(21);
             return null;
         }
     }
@@ -142,41 +139,64 @@ public class FileGetter
         return getFileFromDisk(serverInstanceRoot, startupScriptName);
     }
 
+
     /**
      * Make sure that all required files exist in the Application's root.
      */
-    public static void ensureRootFilesExist()
+    public static boolean ensureRootFilesExist()
     {
         String[] rootFileNames = new String[] {
                 APP_SETTINGS_FILENAME, SERVER_LIST_FILENAME, INFO_FILENAME
         };
         File rootFolder = getApplicationRootFolder();
 
-        System.out.println("-  Testing existance of root files...");
+        System.out.println("Checking root files...");
+        boolean success = true;
+        File file;
         for (String filename : rootFileNames)
         {
-            File file = new File(rootFolder, filename);
-            System.out.print("  - Testing " + filename + "...  ");
+            file = new File(rootFolder, filename);
+            System.out.print("    - " + filename + "...  ");
             if (!testFileExists(file))
             {
-                System.out.println("not exists\n");
+                System.out.print("Creating...  ");
                 boolean writeSuccessful = writeInternalFileToDisk(rootFolder, filename);
                 if (!writeSuccessful)
                 {
-                    System.out.println("!! Failed to create file:\n\t"
-                            + file.getAbsolutePath());
+                    System.out.print("FAILED:\n\t" + file.getAbsolutePath());
+                    success = false;
                 }
                 else
                 {
-                    System.out.println("  - Created successfully: " + filename);
+                    System.out.println("Success");
                 }
             }
             else
             {
-                System.out.print("exists\n");
+                System.out.println("OK");
             }
         }
-        System.out.println("... end test.");
+        if (success)
+        {
+            System.out.println("    Root files ok.");
+        }
+        else
+        {
+            System.out.println("    Failed to gather all root files.");
+        }
+        return success;
+    }
+
+    /**
+     * Prepare the current working directory if valid Minecraft Server
+     * instance
+     * 
+     * @return
+     */
+    public static boolean prepThisFolder()
+    {
+        File cwd = getCurrentWorkingDirectory();
+        return prepServerInstance(cwd);
     }
 
     //// private methods
@@ -264,21 +284,7 @@ public class FileGetter
      */
     private static boolean testFileExists(File file)
     {
-        if (!file.exists())
-        {
-            System.out.println("!! File not exists:\n\t" + file.getAbsolutePath());
-            return false;
-        }
-        else if (!file.canRead())
-        {
-            System.out.println("!! File cannot be read (check permissions):\n\t"
-                    + file.getAbsolutePath());
-            return false;
-        }
-        else
-        {
-            return true;
-        }
+        return file.exists() && file.canRead();
     }
 
     /**
@@ -291,16 +297,21 @@ public class FileGetter
     private static InputStream
             getInternalFileInputStream(String filename) throws FileNotFoundException
     {
-        InputStream input = FileGetter.class.getClassLoader()
-                .getResourceAsStream(RESOURCE_FOLDER + filename);
-        if (input == null)
-        {
-            throw new FileNotFoundException("Could not read internal file: " + filename);
-        }
-        else
-        {
-            return input;
-        }
+        URL resUrl = FileGetter.class.getResource(RESOURCE_FOLDER + filename);
+        String badPath = resUrl.getPath();
+        String goodPath = badPath.substring(badPath.indexOf("!") + 1);
+        //System.out.println("    - Trying to reach: " + goodPath);
+        InputStream input = FileGetter.class.getResourceAsStream(goodPath);
+
+        return input;
+        //        if (input == null)
+        //        {
+        //            throw new FileNotFoundException("Could not read internal file: " + filename);
+        //        }
+        //        else
+        //        {
+        //            return input;
+        //        }
     }
 
     /**
@@ -355,6 +366,69 @@ public class FileGetter
         }
         catch (FileNotFoundException e)
         {
+            System.out.println("!! Error retrieving internal file: " + filename);
+            e.printStackTrace();
+            return false;
+        }
+        catch (IOException e)
+        {
+            System.out.println("!! Error reading internal file: " + filename);
+            e.printStackTrace();
+            return false;
+        }
+        finally
+        {
+            if (input != null)
+            {
+                try
+                {
+                    input.close();
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+            if (output != null)
+            {
+                try
+                {
+                    output.close();
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
+     * Make a copy of a file contained in this jar to the disk.
+     * 
+     * @param destinationFolder
+     * @param filename
+     * @return
+     */
+    private static boolean writeRootFileToDisk(File destinationFolder, String filename)
+    {
+        InputStream input = null;
+        OutputStream output = null;
+        try
+        {
+            input = getRootFileInputStream(filename);
+            output = new FileOutputStream(new File(destinationFolder, filename));
+
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = input.read(buffer)) > 0)
+            {
+                output.write(buffer, 0, bytesRead);
+            }
+            return true;
+        }
+        catch (FileNotFoundException e)
+        {
             e.printStackTrace();
         }
         catch (IOException e)
@@ -389,5 +463,35 @@ public class FileGetter
         return false;
     }
 
-
+    /**
+     * Prepare a Server instance for use with this tool.
+     * 
+     * @param serverInstanceFolder
+     * @return
+     */
+    private static boolean prepServerInstance(File serverInstanceFolder)
+    {
+        System.out.println("Testing for valid Minecraft Server instance...");
+        Server serverInstance = new Server(serverInstanceFolder);
+        if (!serverInstance.isServer())
+        {
+            System.out.println("Not a valid Minecraft Server folder:\n\t"
+                    + serverInstanceFolder.getAbsolutePath());
+            System.out
+                    .println("If this is a Minecraft Server please ensure you have run it at least once to generate the server files.");
+            return false;
+        }
+        else
+        {
+            File testFile = new File(serverInstanceFolder, INFO_FILENAME);
+            if (!testFile.exists())
+            {
+                return writeRootFileToDisk(serverInstanceFolder, INFO_FILENAME);
+            }
+            else
+            {
+                return true;
+            }
+        }
+    }
 }
