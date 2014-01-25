@@ -26,9 +26,6 @@ public class Server
     private ServerInfo info = null;
     private ServerQuery query = null;
 
-    private static final String PROPERTIES_NAME = "server.properties";
-    private static final String INFO_NAME = "server.info";
-    private static final String DEFAULT_STARTUP = "start.sh";
     private static final int DEFAULT_TIMEOUT = 2250;
 
 
