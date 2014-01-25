@@ -4,9 +4,10 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import javax.tools.JavaFileManager.Location;
 import com.indivisible.twistedserveradmin.commands.HelpCmd;
+import com.indivisible.twistedserveradmin.files.FileGetter;
 import com.indivisible.twistedserveradmin.files.FileIterator;
 
 
@@ -17,25 +18,24 @@ public class ServerCollector
 
     private List<File> rootFolders;
     private List<Server> allServers;
-    private String serverRootsListPath;
-
-    public static final String SERVER_LIST = "servers.list";
+    private File serverRootsList;
 
 
     //// constructor & init
 
     public ServerCollector()
     {
-        this.serverRootsListPath = getServerListFilePath();
-        if (serverRootsListPath != null)
+        this.serverRootsList = FileGetter.getServerListFile();
+        if (serverRootsList == null)
         {
-            initRootFolders();
-            collectServers();
+            HelpCmd.printServerListNotExists();
+            System.exit(11);
         }
         else
         {
-            HelpCmd.printServerListNotExists();
-            System.exit(2);
+            initRootFolders();
+            collectServers();
+            sortServers();
         }
     }
 
@@ -46,14 +46,14 @@ public class ServerCollector
         try
         {
             //System.out.println(String.format(" === Iterating %s", serverRootsListPath));
-            iter = new FileIterator(serverRootsListPath);
+            iter = new FileIterator(serverRootsList);
         }
         catch (IOException e)
         {
             System.out.println(" === Error while reading server list :: IOException : "
-                    + serverRootsListPath);
+                    + serverRootsList);
             e.printStackTrace();
-            System.exit(10);
+            System.exit(12);
         }
         if (iter != null)
         {
@@ -101,10 +101,8 @@ public class ServerCollector
                     for (File possibleServer : dirs)
                     {
                         server = checkForServer(possibleServer);
-                        if (server != null && server.hasProperties())
+                        if (server != null)
                         {
-                            //System.out.println("Adding server: "
-                            //        + server.getProperties().getServerName());
                             allServers.add(server);
                         }
                     }
@@ -119,55 +117,40 @@ public class ServerCollector
         else
         {
             System.out.println(" === No root folders to work with. Quitting.");
-            System.exit(2);
+            System.exit(13);
         }
+    }
+
+    private void sortServers()
+    {
+        Collections.sort(allServers, new ServerComparator());
     }
 
 
     //// public methods
 
+    /**
+     * Retrieve List of Servers
+     * 
+     * @return
+     */
     public List<Server> getServers()
     {
         return allServers;
     }
 
-
-    //// private methods
-
     /**
-     * Get the folder this jar is located in
+     * Test has collected usable Servers
      * 
      * @return
      */
-    private File getInstalledFolder()
+    public boolean hasServers()
     {
-        String installLocPath = Location.class.getProtectionDomain().getCodeSource()
-                .getLocation().getPath();
-        String parentPath = new File(installLocPath).getParent();
-        return (new File(parentPath));
+        return allServers != null && allServers.size() > 0;
     }
 
-    /**
-     * Get the path to the server list file that should contain a list of root
-     * folders containing Minecraft Server instances.
-     * 
-     * @return Returns an absolute path to the server list file or null if not
-     *         exists or cannot read.
-     */
-    private String getServerListFilePath()
-    {
-        File thisFolder = getInstalledFolder();
-        File serverListFile = new File(thisFolder, SERVER_LIST);
-        if (serverListFile.exists() && serverListFile.canRead())
-        {
-            return serverListFile.getAbsolutePath();
-        }
-        else
-        {
-            System.out.println(" === Could not find or read server list");
-            return null;
-        }
-    }
+
+    //// private methods
 
     /**
      * Gather all the directories from a folder
@@ -175,9 +158,9 @@ public class ServerCollector
      * @param rootFolder
      * @return
      */
-    private File[] getDirectories(File rootFolder)
+    private File[] getDirectories(File folder)
     {
-        return rootFolder.listFiles(new FileFilter()
+        return folder.listFiles(new FileFilter()
             {
 
                 @Override
