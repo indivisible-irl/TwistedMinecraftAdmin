@@ -1,6 +1,7 @@
 package com.indivisible.twistedserveradmin.commands;
 
 import java.util.List;
+import com.indivisible.twistedserveradmin.query.ServerQuery;
 import com.indivisible.twistedserveradmin.servers.Server;
 import com.indivisible.twistedserveradmin.servers.ServerCollector;
 
@@ -18,6 +19,8 @@ public class ListCmd
             + "    Displays a list of all available nicks.\n"
             + "    [string] parameter is optional and used to filter results";
     private static final String ERROR_NO_SERVERS = "!! No servers found. Check your 'servers.list' file.";
+    private static final String LIST_SERVER_TITLE = "  %s  ::  %s";
+    private static final String LIST_SERVER_ONLINE = "             %d / %d";
 
     //// constructor
 
@@ -57,10 +60,24 @@ public class ListCmd
         if (servers.hasServers())
         {
             //String lastVersion = "";
+            ServerQuery query;
             System.out.println("Servers:");
             for (Server server : servers.getServers())
             {
-                System.out.println("  - " + server.getProperties().getCleanMOTD());
+                int port = server.getProperties().getPort();
+                String motd = server.getProperties().getCleanMOTD();
+                System.out.println(String.format(LIST_SERVER_TITLE, port, motd));
+                if (server.performQuery())
+                {
+                    query = server.getQuery();
+                    int players = query.getPlayersOnline();
+                    int max = query.getMaxPlayers();
+                    System.out.println(String.format(LIST_SERVER_ONLINE, players, max));
+                }
+                else
+                {
+                    System.out.println("             ---");
+                }
             }
             return true;
         }
