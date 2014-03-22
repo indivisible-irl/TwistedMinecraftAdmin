@@ -5,7 +5,14 @@ import com.indivisible.twistedserveradmin.menu.base.Menu;
 
 /**
  * Enum for Server states. <br />
- * Has method for printable representations.
+ * Has method for printable representations. <br />
+ * 
+ * <ul>
+ * <li>online - Server is online and reachable</li>
+ * <li>offline - Server is offline</li>
+ * <li>unknown - Server has not yet been queried or state is weird</li>
+ * <li>error - Server is in a broken state. Likely frozen and unresponsive</li>
+ * </ul>
  * 
  * @author indiv
  */
