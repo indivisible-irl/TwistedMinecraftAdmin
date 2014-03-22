@@ -201,7 +201,9 @@ public class ServerListMenu
     {
         servers = serverManager.getServersAll();
         servers = ServerSort.versionSort(servers);
-        return ServerListUtil.makeVersionSplitChoices(servers);
+        Choices choices = ServerListUtil.makeServerSummaryBlock(servers);
+        choices.add(ServerListUtil.makeVersionSplitChoices(servers));
+        return choices;
     }
 
     /**
@@ -214,7 +216,9 @@ public class ServerListMenu
     {
         servers = serverManager.getServersMonitored();
         servers = ServerSort.versionSort(servers);
-        return ServerListUtil.makeVersionSplitChoices(servers);
+        Choices choices = ServerListUtil.makeServerSummaryBlock(servers);
+        choices.add(ServerListUtil.makeVersionSplitChoices(servers));
+        return choices;
     }
 
     /**
@@ -227,7 +231,9 @@ public class ServerListMenu
     {
         servers = serverManager.getServersAll();
         servers = ServerSort.statusSort(servers);
-        return ServerListUtil.makeStatusSplitChoices(servers);
+        Choices choices = ServerListUtil.makeServerSummaryBlock(servers);
+        choices.add(ServerListUtil.makeStatusSplitChoices(servers));
+        return choices;
     }
 
 
