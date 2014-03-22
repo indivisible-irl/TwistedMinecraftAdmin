@@ -2,6 +2,7 @@ package com.indivisible.twistedserveradmin.config;
 
 import java.io.File;
 import java.io.IOException;
+import com.indivisible.twistedserveradmin.system.Main;
 
 /**
  * Class to read and parse "server.properties" from a Minecraft Server's
@@ -22,23 +23,14 @@ public class ServerProperties
     private static final String KEY_PORT = "server-port";
     private static final String KEY_IP = "server-ip";
     private static final String KEY_ONLINE_MODE = "online-mode";
-    private static final String KEY_QUERY_PORT = "query.port";
-    private static final String KEY_QUERY_ENABLED = "enable-query";
+    //private static final String KEY_QUERY_PORT = "query.port";
+    //private static final String KEY_QUERY_ENABLED = "enable-query";
     private static final String KEY_SEED = "level-seed";
     private static final String KEY_WHITELIST = "white-list";
     private static final String KEY_DIFFICULTY = "difficulty";
     private static final String KEY_PVP = "pvp";
 
-    private static final String DEFAULT_MOTD = "-= No MOTD =-";
-    private static final String DEFAULT_NAME = "-= No Name =-";
-    private static final String DEFAULT_IP = "localhost";
-    private static final int DEFAULT_PORT = 25565;
-    private static final boolean DEFAULT_QUERY_ENABLED = false;
-    private static final String DEFAULT_SEED = "-= No Seed =-";
-    private static final boolean DEFAULT_WHITELISTED = false;
-    private static final boolean DEFAULT_ONLINE = true;
-    private static final boolean DEFAULT_PVP_ENABLED = true;
-    private static final int DEFAULT_DIFFICULTY = -1;
+    private static final String TAG = "ServerProps";
 
 
     //// constructor && init
@@ -60,21 +52,13 @@ public class ServerProperties
 
     /**
      * Get the Server Message of the Day exactly as saved in the settings
-     * file. Used for in-game display to user when selecting a Server to join.
+     * file. ie in-game description.
      * 
      * @return
      */
     public String getRawMOTD()
     {
-        String motd = getString(KEY_MOTD);
-        if (motd == null || motd.equals(""))
-        {
-            return DEFAULT_MOTD;
-        }
-        else
-        {
-            return motd;
-        }
+        return getString(KEY_MOTD);
     }
 
     /**
@@ -86,9 +70,9 @@ public class ServerProperties
     public String getCleanMOTD()
     {
         String motd = getRawMOTD();
-        if (motd.equals(DEFAULT_MOTD))
+        if (motd == null || motd.equals(""))
         {
-            return motd;
+            return null;
         }
         String unescapedMOTD = unescapeUnicodeChars(motd);
         return recurseRemoveMinecraftColor(unescapedMOTD);
@@ -104,7 +88,7 @@ public class ServerProperties
         String name = getString(KEY_NAME);
         if (name == null || name.equals(""))
         {
-            return DEFAULT_NAME;
+            return null;
         }
         return name;
     }
@@ -116,12 +100,7 @@ public class ServerProperties
      */
     public int getPort()
     {
-        int port = getInt(KEY_PORT);
-        if (port == Integer.MIN_VALUE)
-        {
-            return DEFAULT_PORT;
-        }
-        return port;
+        return getInt(KEY_PORT);
     }
 
     /**
@@ -135,47 +114,17 @@ public class ServerProperties
         String ip = getString(KEY_IP);
         if (ip == null || ip.equals(""))
         {
-            return DEFAULT_IP;
+            return null;
         }
-        else if (testIPv4(ip))
+        else if (!testIPv4(ip))
         {
-            return ip;
+            Main.myLog
+                    .warning(TAG, "IP failed IPv4 test. Returning anyway: [" + ip + "]");
+
         }
-        else
-        {
-            return DEFAULT_IP;
-        }
+        return ip;
     }
 
-    /**
-     * Check whether the server has enabled Querying
-     * 
-     * @return
-     */
-    public boolean isQueryEnabled()
-    {
-        Boolean bool = getBool(KEY_QUERY_ENABLED);
-        if (bool == null)
-        {
-            return DEFAULT_QUERY_ENABLED;
-        }
-        return bool;
-    }
-
-    /**
-     * Get the port the server listens for UDP Queries on.
-     * 
-     * @return
-     */
-    public int getQueryPort()
-    {
-        int port = getInt(KEY_QUERY_PORT);
-        if (port == Integer.MIN_VALUE)
-        {
-            return DEFAULT_PORT;
-        }
-        return port;
-    }
 
     /**
      * Get the world seed for the generated map. <br/>
@@ -186,13 +135,7 @@ public class ServerProperties
      */
     public String getSeed()
     {
-        //TODO: if (online && query) getSeed()
-        String seed = getString(KEY_SEED);
-        if (seed == null || seed.equals(""))
-        {
-            return DEFAULT_SEED;
-        }
-        return seed;
+        return getString(KEY_SEED);
     }
 
     /**
@@ -202,15 +145,7 @@ public class ServerProperties
      */
     public boolean isWhitelisted()
     {
-        Boolean whitelisted = getBool(KEY_WHITELIST);
-        if (whitelisted == null)
-        {
-            return DEFAULT_WHITELISTED;
-        }
-        else
-        {
-            return whitelisted;
-        }
+        return getBool(KEY_WHITELIST);
     }
 
     /**
@@ -220,14 +155,9 @@ public class ServerProperties
      * 
      * @return
      */
-    public boolean isOnlineEnabled()
+    public boolean isOnlineModeEnabled()
     {
-        Boolean bool = getBool(KEY_ONLINE_MODE);
-        if (bool == null)
-        {
-            return DEFAULT_ONLINE;
-        }
-        return bool;
+        return getBool(KEY_ONLINE_MODE);
     }
 
     /**
@@ -238,12 +168,7 @@ public class ServerProperties
      */
     public boolean isPVPEnabled()
     {
-        Boolean bool = getBool(KEY_PVP);
-        if (bool == null)
-        {
-            return DEFAULT_PVP_ENABLED;
-        }
-        return bool;
+        return getBool(KEY_PVP);
     }
 
     /**
@@ -259,12 +184,7 @@ public class ServerProperties
      */
     public int getDifficulty()
     {
-        int diff = getInt(KEY_DIFFICULTY);
-        if (diff == Integer.MIN_VALUE)
-        {
-            return DEFAULT_DIFFICULTY;
-        }
-        return diff;
+        return getInt(KEY_DIFFICULTY);
     }
 
 

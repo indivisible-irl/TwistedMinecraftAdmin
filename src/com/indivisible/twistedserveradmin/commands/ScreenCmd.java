@@ -49,6 +49,26 @@ public class ScreenCmd
 
     public boolean invoke(List<String> args)
     {
+        if (args == null || args.size() == 0)
+        {
+            listScreens();
+            return true;
+        }
+        else if (args.size() == 1)
+        {
+            //RET
+        }
+
+
+        return false;
+    }
+
+
+    //// actions
+
+    private boolean listScreens()
+    {
+
         return false;
     }
 

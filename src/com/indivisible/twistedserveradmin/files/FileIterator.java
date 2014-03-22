@@ -58,7 +58,11 @@ public class FileIterator
             {
                 return false;
             }
-            else if (currentLine.equals(""))
+            else
+            {
+                currentLine = currentLine.trim();
+            }
+            if (currentLine.equals(""))
             {
                 continue;
             }
@@ -66,7 +70,7 @@ public class FileIterator
             {
                 continue;
             }
-            return true;
+            return currentLine != null;
         }
     }
 

@@ -1,0 +1,7 @@
+# File to contain all folders that themselves contain Minecraft Servers.
+# Allows for multiple 'root' directories for better division of Servers.
+#
+# Empty lines and lines starting with a '#' will be ignored.
+# All other lines will be interpreted as a complete path to the directory.
+
+/home/user/some/path/to/your/servers

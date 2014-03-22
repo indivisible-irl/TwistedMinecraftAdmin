@@ -13,7 +13,9 @@ public class ServerInfo
         extends Settings
 {
 
-    //// data
+    ///////////////////////////////////////////////////////
+    ////    data
+    ///////////////////////////////////////////////////////
 
     private static final String NICKNAME = "server-nickname";
     private static final String VERSION = "minecraft-version";
@@ -24,7 +26,7 @@ public class ServerInfo
     private static final String SHOW_IN_CONSOLE = "show-in-console";
     private static final String SHOW_IN_API = "show-in-api";
 
-    private static final String DEFAULT_NICKNAME = "no nickname";
+    //private static final String DEFAULT_NICKNAME = "no nickname";
     private static final String DEFAULT_VERSION = "no vers";
     private static final String DEFAULT_STARTUP_SCRIPT = "start.sh";
     private static final boolean DEFAULT_AUTO_START = false;
@@ -34,7 +36,9 @@ public class ServerInfo
     private static final boolean DEFAULT_SHOW_IN_API = false;
 
 
-    //// constructor & init
+    ///////////////////////////////////////////////////////
+    ////    constructor & init
+    ///////////////////////////////////////////////////////
 
     /**
      * Class to access Server's server.info settings
@@ -48,11 +52,13 @@ public class ServerInfo
     }
 
 
-    //// public methods
+    ///////////////////////////////////////////////////////
+    ////    public methods
+    ///////////////////////////////////////////////////////
 
     /**
      * Get the Server's nickname. To be used for screen and easy
-     * identification.
+     * identification. Will return null if none set or accessible.
      * 
      * @return
      */
@@ -61,7 +67,7 @@ public class ServerInfo
         String nick = getString(NICKNAME);
         if (nick == null || nick.equals(""))
         {
-            return DEFAULT_NICKNAME;
+            return null;
         }
         return nick;
     }

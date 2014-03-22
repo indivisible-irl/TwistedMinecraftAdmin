@@ -7,10 +7,10 @@
 ##
 
 # Nickname for the server to be used in most situations (cmd line id, screen name etc)
-server-nickname = DefaultServer01
+server-nickname = 
 
-# Version of Minecraft the Server is based off. Try to keep up-to-date. Used for Server display grouping when server offline
-minecraft-version = 9.9.9
+# Version of Minecraft the Server is based off. Try to keep up-to-date. Used for Server display grouping.
+minecraft-version = 0.0.0
 
 # Name of the startup script. Defaults to 'start.sh'. Must be located in Server's instance folder.
 startup-script = start.sh

@@ -29,6 +29,8 @@ public class SettingsApplication
     private static final String KEY_CREATE_INFO = "create-info";
     private static final String KEY_DEFAULT_ADDRESS = "default-server-ip";
 
+    //TODO: default backup location
+
 
     //// constructor & init
 

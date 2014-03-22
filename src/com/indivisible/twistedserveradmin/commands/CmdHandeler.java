@@ -24,25 +24,25 @@ public class CmdHandeler
 
         // populate with all commands
         ICmd cmd = null;
-        cmds.put(helpCmd.getName(), helpCmd);
+        cmds.put(helpCmd.getName(), helpCmd);   // help
         cmd = new StatusCmd();
-        cmds.put(cmd.getName(), cmd);
+        cmds.put(cmd.getName(), cmd);           // status
         cmd = new ListCmd();
-        cmds.put(cmd.getName(), cmd);
+        cmds.put(cmd.getName(), cmd);           // list
         cmd = new ScreenCmd();
-        cmds.put(cmd.getName(), cmd);
+        cmds.put(cmd.getName(), cmd);           // screen
         cmd = new StartCmd();
-        cmds.put(cmd.getName(), cmd);
+        cmds.put(cmd.getName(), cmd);           // start
         cmd = new StopCmd();
-        cmds.put(cmd.getName(), cmd);
+        cmds.put(cmd.getName(), cmd);           // stop
         cmd = new RestartCmd();
-        cmds.put(cmd.getName(), cmd);
+        cmds.put(cmd.getName(), cmd);           // restart
         cmd = new SaveCmd();
-        cmds.put(cmd.getName(), cmd);
+        cmds.put(cmd.getName(), cmd);           // save
         cmd = new BackupCmd();
-        cmds.put(cmd.getName(), cmd);
+        cmds.put(cmd.getName(), cmd);           // backup
         cmd = new PrepCmd();
-        cmds.put(cmd.getName(), cmd);
+        cmds.put(cmd.getName(), cmd);           // prepare server
 
         helpCmd.setCmds(cmds);
     }

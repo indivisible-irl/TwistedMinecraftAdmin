@@ -1,9 +1,9 @@
 package com.indivisible.twistedserveradmin.commands;
 
 import java.util.List;
-import com.indivisible.twistedserveradmin.query.ServerQuery;
-import com.indivisible.twistedserveradmin.servers.Server;
-import com.indivisible.twistedserveradmin.servers.ServerCollector;
+import com.indivisible.twistedserveradmin.query.MinecraftServerQuery;
+import com.indivisible.twistedserveradmin.servers.MinecraftServer;
+import com.indivisible.twistedserveradmin.servers.ServerManager;
 
 
 public class ListCmd
@@ -56,16 +56,16 @@ public class ListCmd
     public boolean invoke(List<String> args)
     {
         //TODO: branch based on args
-        ServerCollector servers = new ServerCollector();
+        ServerManager servers = new ServerManager();
         if (servers.hasServers())
         {
             //String lastVersion = "";
-            ServerQuery query;
+            MinecraftServerQuery query;
             System.out.println("Servers:");
-            for (Server server : servers.getServers())
+            for (MinecraftServer server : servers.getServersAll())
             {
-                int port = server.getProperties().getPort();
-                String motd = server.getProperties().getCleanMOTD();
+                int port = server.getPort();
+                String motd = server.getMOTD();
                 System.out.println(String.format(LIST_SERVER_TITLE, port, motd));
                 if (server.performQuery())
                 {

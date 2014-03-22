@@ -1,37 +1,48 @@
 package com.indivisible.twistedserveradmin.logging;
 
 import java.io.File;
+import com.indivisible.twistedserveradmin.util.DateTimeUtil;
 
 
 public class MyLog
 {
 
-    //TODO: logging - use util.Logging instead
+    //TODO: logging - use util.Logging
+    //ASK: log to db?
 
     //// data
 
     //private File logFile = null;
-    private int loggingLevel = -1;
-    private int debuggingLevel = -1;
+    //private Level loggingLevel;
+    private static LogLevel printLevel;
 
-    //private static final int LEVEL_OFF = 0;
-    private static final int LEVEL_ERROR = 1;
-    private static final int LEVEL_WARNING = 2;
-    private static final int LEVEL_INFO = 3;
-    private static final int LEVEL_VERBOSE = 4;
+    private static String COL_RESET = "\u001B[0m";
+    private static String COL_RED = "\u001B[31m";
+    private static String COL_PURPLE = "\u001B[35m";
+    private static String COL_YELLOW = "\u001B[33m";
+    private static String COL_WHITE = "\u001B[37m";
+    private static String COL_CYAN = "\u001B[36m";
 
-    private static String DEBUG_ERROR_MSG = "[ERR]  %s";
-    private static String DEBUG_WARNING_MSG = "[WARN] %s";
-    private static String DEBUG_INFO_MSG = "[INFO] %s";
-    private static String DEBUG_VERBOSE_MSG = "[VERB] %s";
+    private static String FORMAT_ERROR_MSG = "%s " + COL_RED + "[ERR!]  [%s] %s"
+            + COL_RESET;
+    private static String FORMAT_WARNING_MSG = "%s " + COL_PURPLE + "[WARN] [%s] %s"
+            + COL_RESET;
+    private static String FORMAT_INFO_MSG = "%s " + COL_YELLOW + "[INFO] [%s] %s"
+            + COL_RESET;
+    private static String FORMAT_VERBOSE_MSG = "%s " + COL_WHITE + "[VERB] [%s] %s"
+            + COL_RESET;
+    private static String FORMAT_DEBUG_MSG = "%s " + COL_CYAN + "[DEBG] [%s] %s"
+            + COL_RESET;
+
+    //private static String FORMAT_SUBSEQUENT = "    -  %s";
 
 
     //// constructor
 
-    public MyLog(File logFile, int logLevel, int debugLevel)
+    public MyLog(File logFile, LogLevel logLevel, LogLevel printLevel)
     {
-        loggingLevel = logLevel;
-        debuggingLevel = debugLevel;
+        //this.loggingLevel = logLevel;
+        MyLog.printLevel = printLevel;
     }
 
 
@@ -39,121 +50,57 @@ public class MyLog
 
     public void error(String className, String msg)
     {
-        if (loggingLevel >= LEVEL_ERROR)
+        //        if (loggingLevel.ordinal() >= Level.error.ordinal())
+        //        {
+        //            logError(className, msg);
+        //        }
+        if (printLevel.ordinal() > LogLevel.error.ordinal())
         {
-            logError(className, msg);
-        }
-        if (debuggingLevel >= LEVEL_ERROR)
-        {
-            debugError(className, msg);
-        }
-    }
-
-    public void error(String className, String[] msgs)
-    {
-        if (loggingLevel >= LEVEL_ERROR)
-        {
-            for (String msg : msgs)
-            {
-                logError(className, msg);
-            }
-        }
-        if (debuggingLevel >= LEVEL_ERROR)
-        {
-            for (String msg : msgs)
-            {
-                debugError(className, msg);
-            }
+            printError(className, msg);
         }
     }
 
     public void warning(String className, String msg)
     {
-        if (loggingLevel >= LEVEL_WARNING)
+        //        if (loggingLevel.ordinal() >= Level.warning.ordinal())
+        //        {
+        //            logWarning(className, msg);
+        //        }
+        if (printLevel.ordinal() >= LogLevel.warning.ordinal())
         {
-            logWarning(className, msg);
-        }
-        if (debuggingLevel >= LEVEL_WARNING)
-        {
-            debugWarning(className, msg);
-        }
-    }
-
-    public void warning(String className, String[] msgs)
-    {
-        if (loggingLevel >= LEVEL_WARNING)
-        {
-            for (String msg : msgs)
-            {
-                logWarning(className, msg);
-            }
-        }
-        if (debuggingLevel >= LEVEL_WARNING)
-        {
-            for (String msg : msgs)
-            {
-                debugWarning(className, msg);
-            }
+            printWarning(className, msg);
         }
     }
 
     public void info(String className, String msg)
     {
-        if (loggingLevel >= LEVEL_INFO)
+        //        if (loggingLevel.ordinal() >= Level.info.ordinal())
+        //        {
+        //            logInfo(className, msg);
+        //        }
+        if (printLevel.ordinal() >= LogLevel.info.ordinal())
         {
-            logInfo(className, msg);
-        }
-        if (debuggingLevel >= LEVEL_INFO)
-        {
-            debugInfo(className, msg);
-        }
-    }
-
-    public void info(String className, String[] msgs)
-    {
-        if (loggingLevel >= LEVEL_INFO)
-        {
-            for (String msg : msgs)
-            {
-                logInfo(className, msg);
-            }
-        }
-        if (debuggingLevel >= LEVEL_INFO)
-        {
-            for (String msg : msgs)
-            {
-                debugInfo(className, msg);
-            }
+            printInfo(className, msg);
         }
     }
 
     public void verbose(String className, String msg)
     {
-        if (loggingLevel >= LEVEL_VERBOSE)
+        //        if (loggingLevel.ordinal() >= Level.verbose.ordinal())
+        //        {
+        //            logVerbose(className, msg);
+        //        }
+        if (printLevel.ordinal() >= LogLevel.verbose.ordinal())
         {
-            logVerbose(className, msg);
-        }
-        if (debuggingLevel >= LEVEL_VERBOSE)
-        {
-            debugVerbose(className, msg);
+            printVerbose(className, msg);
         }
     }
 
-    public void verbose(String className, String[] msgs)
+    public void debug(String className, String msg)
     {
-        if (loggingLevel >= LEVEL_VERBOSE)
+        if (printLevel.ordinal() >= LogLevel.debug.ordinal())
         {
-            for (String msg : msgs)
-            {
-                logVerbose(className, msg);
-            }
-        }
-        if (debuggingLevel >= LEVEL_VERBOSE)
-        {
-            for (String msg : msgs)
-            {
-                debugVerbose(className, msg);
-            }
+            printDebug(className, msg);
         }
     }
 
@@ -162,47 +109,72 @@ public class MyLog
 
     // logging methods
 
-    private void logError(String className, String msg)
-    {
-        //TODO: log
-    }
-
-    private void logWarning(String className, String msg)
-    {
-        //TODO: log
-    }
-
-    private void logInfo(String className, String msg)
-    {
-        //TODO: log
-    }
-
-    private void logVerbose(String className, String msg)
-    {
-        //TODO: log
-    }
+    //    private void logError(String className, String msg)
+    //    {
+    //        //TODO: log
+    //    }
+    //
+    //    private void logWarning(String className, String msg)
+    //    {
+    //        //TODO: log
+    //    }
+    //
+    //    private void logInfo(String className, String msg)
+    //    {
+    //        //TODO: log
+    //    }
+    //
+    //    private void logVerbose(String className, String msg)
+    //    {
+    //        //TODO: log
+    //    }
 
     // debugging methods
 
-    private void debugError(String className, String msg)
+    private void printError(String className, String msg)
     {
-        System.out.println(String.format(DEBUG_ERROR_MSG, msg));
+        System.out.println(String.format(FORMAT_ERROR_MSG,
+                                         DateTimeUtil.getLogTime(),
+                                         className,
+                                         msg));
     }
 
-    private void debugWarning(String className, String msg)
+    private void printWarning(String className, String msg)
     {
-        System.out.println(String.format(DEBUG_WARNING_MSG, msg));
+        System.out.println(String.format(FORMAT_WARNING_MSG,
+                                         DateTimeUtil.getLogTime(),
+                                         className,
+                                         msg));
     }
 
-    private void debugInfo(String className, String msg)
+    private void printInfo(String className, String msg)
     {
-        System.out.println(String.format(DEBUG_INFO_MSG, msg));
+        System.out.println(String.format(FORMAT_INFO_MSG,
+                                         DateTimeUtil.getLogTime(),
+                                         className,
+                                         msg));
     }
 
-    private void debugVerbose(String className, String msg)
+    private void printVerbose(String className, String msg)
     {
-        System.out.println(String.format(DEBUG_VERBOSE_MSG, msg));
+        System.out.println(String.format(FORMAT_VERBOSE_MSG,
+                                         DateTimeUtil.getLogTime(),
+                                         className,
+                                         msg));
     }
+
+    private void printDebug(String className, String msg)
+    {
+        System.out.println(String.format(FORMAT_DEBUG_MSG,
+                                         DateTimeUtil.getLogTime(),
+                                         className,
+                                         msg));
+    }
+
+    //    private void printSubsequent(String className, String msg)
+    //    {
+    //        System.out.println(String.format(FORMAT_SUBSEQUENT, msg));
+    //    }
 
 
 }

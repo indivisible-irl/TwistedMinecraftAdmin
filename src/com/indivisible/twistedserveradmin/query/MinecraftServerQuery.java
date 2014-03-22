@@ -15,12 +15,17 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.nio.charset.Charset;
+import com.indivisible.twistedserveradmin.servers.ServerStatus;
+import com.indivisible.twistedserveradmin.system.Main;
 
-public final class ServerQuery
+public final class MinecraftServerQuery
 {
 
-    //// data
+    ///////////////////////////////////////////////////////
+    ////    data
+    ///////////////////////////////////////////////////////
 
     // need to connect
     private String address = null;
@@ -34,20 +39,26 @@ public final class ServerQuery
     private int playersOnline = 0;
     private int maxPlayers = -1;
     private Boolean response = null;
+    private ServerStatus serverStatus = ServerStatus.unknown;
 
     private long timeLastRun = 0L;
 
-    //// constructors
+    private static final String TAG = "MCServerQuery";
 
-    public ServerQuery(String address, int port, int timeout)
+    ///////////////////////////////////////////////////////
+    ////    constructors
+    ///////////////////////////////////////////////////////
+
+    public MinecraftServerQuery(String address, int port, int timeout)
     {
         this.address = address;
         this.port = port;
         this.timeout = timeout;
     }
 
-
-    //// gets & sets
+    ///////////////////////////////////////////////////////
+    ////    gets & sets
+    ///////////////////////////////////////////////////////
 
     private void setPingVersion(int pingVersion)
     {
@@ -114,11 +125,17 @@ public final class ServerQuery
         return timeLastRun;
     }
 
+    public ServerStatus getServerStatus()
+    {
+        return serverStatus;
+    }
 
-    //// methods
+    ///////////////////////////////////////////////////////
+    ////    methods
+    ///////////////////////////////////////////////////////
 
     /**
-     * Connect to and ask for server info
+     * Connect to and ask for Server's info
      * 
      * @return
      */
@@ -137,29 +154,36 @@ public final class ServerQuery
             socket.setSoTimeout(timeout);
 
             socket.connect(new InetSocketAddress(address, port), timeout);
+            //System.out.println("socket connected");
 
             outputStream = socket.getOutputStream();
             dataOutputStream = new DataOutputStream(outputStream);
+            //System.out.println("socket output");
 
             inputStream = socket.getInputStream();
             inputStreamReader = new InputStreamReader(inputStream,
                     Charset.forName("UTF-16BE"));
+            //System.out.println("socket input");
 
             dataOutputStream.write(new byte[] {
                     (byte) 0xFE, (byte) 0x01
             });
+            //System.out.println("sent query");
 
             int packetId = inputStream.read();
+            //System.out.println("read query");
 
             if (packetId == -1)
             {
                 socket.close();
+                //System.out.println("Premature end of stream");
                 throw new IOException("Premature end of stream.");
             }
 
             if (packetId != 0xFF)
             {
                 socket.close();
+                //System.out.println("Invalid packet ID");
                 throw new IOException("Invalid packet ID (" + packetId + ").");
             }
 
@@ -168,12 +192,14 @@ public final class ServerQuery
             if (length == -1)
             {
                 socket.close();
+                //System.out.println("Premature 2");
                 throw new IOException("Premature end of stream.");
             }
 
             if (length == 0)
             {
                 socket.close();
+                //System.out.println("Invalid string length");
                 throw new IOException("Invalid string length.");
             }
 
@@ -182,6 +208,7 @@ public final class ServerQuery
             if (inputStreamReader.read(chars, 0, length) != length)
             {
                 socket.close();
+                //System.out.println("Premature 3");
                 throw new IOException("Premature end of stream.");
             }
 
@@ -202,23 +229,32 @@ public final class ServerQuery
                 this.setPlayersOnline(Integer.parseInt(data[1]));
                 this.setMaxPlayers(Integer.parseInt(data[2]));
             }
-
-            //			dataOutputStream.close();
-            //			outputStream.close();
-            //
-            //			inputStreamReader.close();
-            //			inputStream.close();
-            //
-            //			socket.close();
         }
-        catch (SocketException exception)
+        catch (SocketException e)
         {
             setResponse(false);
+            Main.myLog.info(TAG, "Failed to connect to " + address + ":" + port);
+            //ASK: socket exception means offline? Need to test
+            serverStatus = ServerStatus.offline;
+            //e.printStackTrace();
             return false;
         }
-        catch (IOException exception)
+        catch (SocketTimeoutException e)
         {
             setResponse(false);
+            Main.myLog.error(TAG, "Socket for Query timed out for " + address + ":"
+                    + port);
+            serverStatus = ServerStatus.error;
+            //NOTE: BTeam was crashed (OutOfMemoryError) and threw to here.
+            return false;
+        }
+        catch (IOException e)
+        {
+            setResponse(false);
+            Main.myLog.error(TAG, "IOException -- " + address + ":" + port + " / "
+                    + timeout);
+            serverStatus = ServerStatus.error;
+            e.printStackTrace();
             return false;
         }
         finally
@@ -280,6 +316,7 @@ public final class ServerQuery
             }
         }
 
+        serverStatus = ServerStatus.online;
         setResponse(true);
         return true;
     }

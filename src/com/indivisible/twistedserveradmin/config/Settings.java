@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import com.indivisible.twistedserveradmin.files.FileIterator;
+import com.indivisible.twistedserveradmin.system.Main;
+
+//TODO: use Main.myLog for errors and warnings
 
 /**
  * Parent class to parse a settings file and collect key, value pairs of the
@@ -13,16 +16,25 @@ import com.indivisible.twistedserveradmin.files.FileIterator;
  * @author indiv
  * 
  */
-public class Settings
+abstract class Settings
 {
 
-    //// data
+    ///////////////////////////////////////////////////////
+    ////    data
+    ///////////////////////////////////////////////////////
 
     private File file;
-    protected Map<String, String> settings = null;
+    protected Map<String, String> settingsMap = null;
+
+    private static final String COMMENT_CHAR = "#";
+    private static final String EQUALS_CHAR = "=";
+
+    private static String TAG = "Settings";
 
 
-    //// constructor & init
+    ///////////////////////////////////////////////////////
+    ////    constructor & init
+    ///////////////////////////////////////////////////////
 
     /**
      * Class to collect key value pairs from a server settings file.
@@ -46,16 +58,16 @@ public class Settings
     private void collectProperties(File settingsFile) throws IOException
     {
         FileIterator iter = new FileIterator(settingsFile);
-        settings = new HashMap<String, String>();
-        String line;
-        int equalsLoc;
-        boolean hasRunOnce = false;
+        settingsMap = new HashMap<String, String>();
+        boolean hasCollectedOne = false;
         try
         {
+            String line;
+            int equalsLoc;
             while (iter.hasNext())
             {
                 line = iter.next().trim();
-                if (line.startsWith("#"))
+                if (line.startsWith(COMMENT_CHAR))
                 {
                     continue;
                 }
@@ -65,40 +77,41 @@ public class Settings
                 }
                 else
                 {
-                    equalsLoc = line.indexOf("=");
+                    equalsLoc = line.indexOf(EQUALS_CHAR);
                     if (equalsLoc != -1)
                     {
                         String key = line.substring(0, equalsLoc).trim();
-                        String prop;
+                        String value;
                         try
                         {
-                            prop = line.substring(equalsLoc + 1).trim();
+                            value = line.substring(equalsLoc + 1).trim();
                         }
                         catch (IndexOutOfBoundsException e)
                         {
-                            prop = "";
+                            value = "";
                         }
-                        settings.put(key, prop);
-                        hasRunOnce = true;
+                        settingsMap.put(key, value);
+                        hasCollectedOne = true;
                     }
                 }
-            }
-            if (!hasRunOnce)
-            {
-                //TODO: count lines added and return an int instead
-                System.out.println(" === Error: Never parsed a single line: "
-                        + file.getAbsolutePath());
             }
         }
         finally
         {
             iter.close();
         }
-
+        if (!hasCollectedOne)
+        {
+            //ASK: count lines added and return an int instead?
+            Main.myLog
+                    .error(TAG, "Never parsed a single line: " + file.getAbsolutePath());
+        }
     }
 
 
-    //// public methods
+    ///////////////////////////////////////////////////////
+    ////    public methods
+    ///////////////////////////////////////////////////////
 
     /**
      * Verify that there are settings saved
@@ -107,8 +120,13 @@ public class Settings
      */
     public boolean hasSettings()
     {
-        return (settings != null && !settings.isEmpty());
+        return (settingsMap != null && !settingsMap.isEmpty());
     }
+
+
+    ///////////////////////////////////////////////////////
+    ////    Value retrieval
+    ///////////////////////////////////////////////////////
 
     /**
      * Retrieve a single string value from the collected settings by key.
@@ -119,25 +137,169 @@ public class Settings
      */
     private String getRawProperty(String propertyName)
     {
-        if (settings == null || settings.isEmpty())
+        if (settingsMap == null)
         {
-            System.out.println(" === Properties not collected / set");
+            Main.myLog.error(TAG, "ServerProperties not collected or set");
+            return null;
+        }
+        else if (settingsMap.isEmpty())
+        {
+            Main.myLog.error(TAG, "ServerProperties empty");
             return null;
         }
         else
         {
             // null if no key, empty String if not set
-            return settings.get(propertyName);
+            String value = settingsMap.get(propertyName);
+            if (value == null)
+            {
+                Main.myLog.error(TAG, "No key found matching [" + propertyName + "] "
+                        + file.getAbsolutePath());
+            }
+            else if (value.equals(""))
+            {
+                Main.myLog.warning(TAG, "No value saved for key [" + propertyName + "] "
+                        + file.getAbsolutePath());
+            }
+            return value;
+        }
+    }
+
+    /**
+     * Get a string value from the settings. Remember, String may be empty. <br />
+     * Returns 'null' on failure.
+     * 
+     * @param propertyKey
+     * @return String
+     */
+    public String getString(String propertyKey)
+    {
+        return getRawProperty(propertyKey);
+    }
+
+    /**
+     * Attempt to convert a String value to an int. <br />
+     * Returns Integer.MIN_VALUE on failure.
+     * 
+     * @param strNum
+     * @return int
+     */
+    protected int getInt(String propertyKey)
+    {
+        String value = getRawProperty(propertyKey);
+        if (value == null)
+        {
+            return Integer.MIN_VALUE;
+        }
+        try
+        {
+            int val = Integer.parseInt(value);
+            return val;
+        }
+        catch (NumberFormatException e)
+        {
+            Main.myLog.warning(TAG, "Error parsing " + propertyKey + " for int: ["
+                    + value + "] " + file.getAbsolutePath());
+            return Integer.MIN_VALUE;
+        }
+    }
+
+    /**
+     * Convert a value to a boolean. <br />
+     * Returns 'null' on failure.
+     * 
+     * @param propertyKey
+     * @return Boolean
+     */
+    protected Boolean getBool(String propertyKey)
+    {
+        String value = getRawProperty(propertyKey);
+        if (value == null)
+        {
+            return null;
+        }
+        else if (value.toLowerCase().equals("true"))
+        {
+            return true;
+        }
+        else if (value.toLowerCase().equals("false"))
+        {
+            return false;
+        }
+        else
+        {
+            Main.myLog.warning(TAG,
+                               "Error parsing for Boolean: [" + value + "] "
+                                       + file.getAbsolutePath());
+            return null;
+        }
+    }
+
+    /**
+     * Convert and return a long from the settings. <br />
+     * Returns Long.MIN_VALUE on failure.
+     * 
+     * @param propertyKey
+     * @return long
+     */
+    public long getLong(String propertyKey)
+    {
+        String value = getRawProperty(propertyKey);
+        if (value == null)
+        {
+            return Long.MIN_VALUE;
+        }
+        try
+        {
+            long num = Long.parseLong(value);
+            return num;
+        }
+        catch (NumberFormatException e)
+        {
+            Main.myLog.warning(TAG,
+                               "Error parsing for long: [" + value + "] "
+                                       + file.getAbsolutePath());
+            return Long.MIN_VALUE;
+        }
+    }
+
+    /**
+     * Get a float value from the settings. <br />
+     * Returns Float.MIN_VALUE on failure.
+     * 
+     * @param propertyKey
+     * @return float
+     */
+    public float getFloat(String propertyKey)
+    {
+        String value = getRawProperty(propertyKey);
+        if (value == null)
+        {
+            return Float.MIN_VALUE;
+        }
+        try
+        {
+            float num = Float.parseFloat(value);
+            return num;
+        }
+        catch (NumberFormatException e)
+        {
+            Main.myLog.warning(TAG,
+                               "Error parsing for float: [" + value + "] "
+                                       + file.getAbsolutePath());
+            return Float.MIN_VALUE;
         }
     }
 
 
-    //// protected methods
+    ///////////////////////////////////////////////////////    
+    ////    String test and parse methods
+    ///////////////////////////////////////////////////////
 
     /**
      * Recursive method to strip out colour codes from the MOTD.<br/>
      * Borrowed from my MCServerPing application.<br/>
-     * (TODO: merge its functionality into this)
+     * (ASK: merge its functionality into this)
      * 
      * @param name
      * @return
@@ -163,7 +325,7 @@ public class Settings
 
     /**
      * Convert unicode escaped Strings to their encoded characters and return
-     * full converted string
+     * full converted string.
      * 
      * @param
      * @return
@@ -194,124 +356,6 @@ public class Settings
     }
 
     /**
-     * Get a string value from the settings. Remember, String may be empty.
-     * 
-     * @param propertyKey
-     * @return String, Returns 'null' on failure.
-     */
-    public String getString(String propertyKey)
-    {
-        return getRawProperty(propertyKey);
-    }
-
-    /**
-     * Attempt to convert a String value to an int
-     * 
-     * @param strNum
-     * @return int, Returns Integer.MIN_VALUE on failure.
-     */
-    protected int getInt(String propertyKey)
-    {
-        String value = getRawProperty(propertyKey);
-        if (value == null)
-        {
-            //System.out.println(" === Key not exists: [" + propertyKey + "]");
-            return Integer.MIN_VALUE;
-        }
-        try
-        {
-            int val = Integer.parseInt(value);
-            return val;
-        }
-        catch (NumberFormatException e)
-        {
-            //System.out.println(" === Error parsing for int: [" + value + "]");
-            return Integer.MIN_VALUE;
-        }
-    }
-
-    /**
-     * Convert a value to a boolean.
-     * 
-     * @param propertyKey
-     * @return Boolean, Returns 'null' on failure
-     */
-    protected Boolean getBool(String propertyKey)
-    {
-        String value = getRawProperty(propertyKey);
-        if (value == null)
-        {
-            //System.out.println(" === Key not exists: [" + propertyKey + "]");
-            return null;
-        }
-        else if (value.toLowerCase().equals("true"))
-        {
-            return true;
-        }
-        else if (value.toLowerCase().equals("false"))
-        {
-            return false;
-        }
-        else
-        {
-            //System.out.println(" === Error parsing boolean: " + value);
-            return null;
-        }
-    }
-
-    /**
-     * Convert and return a long from the settings.
-     * 
-     * @param propertyKey
-     * @return long, Returns Long.MIN_VALUE on failure.
-     */
-    public long getLong(String propertyKey)
-    {
-        String value = getRawProperty(propertyKey);
-        if (value == null)
-        {
-            //System.out.println(" === Key not exists [" + propertyKey + "]");
-            return Long.MIN_VALUE;
-        }
-        try
-        {
-            long num = Long.parseLong(value);
-            return num;
-        }
-        catch (NumberFormatException e)
-        {
-            //System.out.println(" === Error parsing long: " + value);
-            return Long.MIN_VALUE;
-        }
-    }
-
-    /**
-     * Get a float value from the settings.
-     * 
-     * @param propertyKey
-     * @return float, Returns Float.MIN_VALUE on failure.
-     */
-    public float getFloat(String propertyKey)
-    {
-        String value = getRawProperty(propertyKey);
-        if (value == null || value.equals(""))
-        {
-            //System.out.println(" === Error reading float: " + propertyKey);
-            return Float.MIN_VALUE;
-        }
-        try
-        {
-            float num = Float.parseFloat(value);
-            return num;
-        }
-        catch (NumberFormatException e)
-        {
-            //System.out.println(" === Unable to convert to float: [" + value + "]");
-            return Float.MIN_VALUE;
-        }
-    }
-
-    /**
      * Test an IP address as an IPv4 address.
      * 
      * @param rawIP
@@ -334,5 +378,8 @@ public class Settings
         }
         return count == 3;
     }
+
+    //ASK: Also test for IPv6??
+    //  
 
 }

@@ -2,6 +2,7 @@ package com.indivisible.twistedserveradmin.commands;
 
 import java.util.List;
 
+//ASK: Make an abstract Cmd class with most of these methods instead of an interface?
 
 public interface ICmd
 {

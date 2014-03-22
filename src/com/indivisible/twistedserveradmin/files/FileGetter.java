@@ -1,6 +1,7 @@
 package com.indivisible.twistedserveradmin.files;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -10,7 +11,8 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
-import com.indivisible.twistedserveradmin.servers.Server;
+import com.indivisible.twistedserveradmin.servers.MinecraftServer;
+import com.indivisible.twistedserveradmin.system.Main;
 
 /**
  * Class to handle calculation and testing for necessary files and folders.
@@ -30,9 +32,34 @@ public class FileGetter
     private static final String SERVER_LIST_FILENAME = "servers.list";
     private static final String INFO_FILENAME = "server.info";
     private static final String PROPS_FILENAME = "server.properties";
+    private static final String TAG = "FileGetter";
 
 
     //// public methods
+
+    /**
+     * Gather all the directories from a folder
+     * 
+     * @param rootFolder
+     * @return
+     */
+    public static File[] getDirectories(File folder)
+    {
+        if (folder == null | !folder.exists() || !folder.canRead()
+                || !folder.isDirectory())
+        {
+            return null;
+        }
+        return folder.listFiles(new FileFilter()
+            {
+
+                @Override
+                public boolean accept(File file)
+                {
+                    return file.isDirectory() && file.canRead();
+                }
+            });
+    }
 
     /**
      * Retrieve the file that contains the Application settings.<br/>
@@ -55,9 +82,10 @@ public class FileGetter
         }
         else
         {
-            System.out.println("!! Error getting settings file: "
-                    + settingsFile.getAbsolutePath());
-            System.out.println("!! Quitting...");
+            Main.myLog.error(TAG,
+                             "Error getting settings file: "
+                                     + settingsFile.getAbsolutePath());
+            Main.myLog.error(TAG, "Quitting...");
             System.exit(20);
             return null;
         }
@@ -79,8 +107,9 @@ public class FileGetter
         }
         else
         {
-            System.out.println("!! Error getting server list file: "
-                    + serverListFile.getAbsolutePath());
+            Main.myLog.error(TAG,
+                             "Error getting server list file: "
+                                     + serverListFile.getAbsolutePath());
             return null;
         }
     }
@@ -150,39 +179,43 @@ public class FileGetter
         };
         File rootFolder = getApplicationRootFolder();
 
-        System.out.println("Checking root files...");
+        Main.myLog.info(TAG, "Checking root files...");
         boolean success = true;
         File file;
+        String info;
         for (String filename : rootFileNames)
         {
             file = new File(rootFolder, filename);
-            System.out.print("    - " + filename + "...  ");
+            info = "    - " + filename + "...  ";
             if (!testFileExists(file))
             {
-                System.out.print("Creating...  ");
+                info += "Creating...  ";
                 boolean writeSuccessful = writeInternalFileToDisk(rootFolder, filename);
                 if (!writeSuccessful)
                 {
-                    System.out.print("FAILED:\n\t" + file.getAbsolutePath());
+                    info += "FAILED:\n\t" + file.getAbsolutePath();
+                    Main.myLog.error(TAG, info);
                     success = false;
                 }
                 else
                 {
-                    System.out.println("Success");
+                    info += "Success";
+                    Main.myLog.verbose(TAG, info);
                 }
             }
             else
             {
-                System.out.println("OK");
+                info += "OK";
+                Main.myLog.verbose(TAG, info);
             }
         }
         if (success)
         {
-            System.out.println("    Root files ok.");
+            Main.myLog.info(TAG, "Root files ok.");
         }
         else
         {
-            System.out.println("    Failed to gather all root files.");
+            Main.myLog.error(TAG, "Failed to gather all root files.");
         }
         return success;
     }
@@ -219,7 +252,7 @@ public class FileGetter
         }
         catch (UnsupportedEncodingException e)
         {
-            System.out.println("Unencoding jar path failed on:\n\t" + path);
+            Main.myLog.error(TAG, "Unencoding jar path failed on:\n\t" + path);
             e.printStackTrace();
             return null;
         }
@@ -366,13 +399,13 @@ public class FileGetter
         }
         catch (FileNotFoundException e)
         {
-            System.out.println("!! Error retrieving internal file: " + filename);
+            Main.myLog.error(TAG, "Error retrieving internal file: " + filename);
             e.printStackTrace();
             return false;
         }
         catch (IOException e)
         {
-            System.out.println("!! Error reading internal file: " + filename);
+            Main.myLog.error(TAG, "Error reading internal file: " + filename);
             e.printStackTrace();
             return false;
         }
@@ -472,7 +505,7 @@ public class FileGetter
     private static boolean prepServerInstance(File serverInstanceFolder)
     {
         System.out.println("Testing for valid Minecraft Server instance...");
-        Server serverInstance = new Server(serverInstanceFolder);
+        MinecraftServer serverInstance = new MinecraftServer(serverInstanceFolder);
         if (!serverInstance.isServer())
         {
             System.out.println("Not a valid Minecraft Server folder:\n\t"
