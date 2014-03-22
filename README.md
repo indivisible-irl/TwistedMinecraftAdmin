@@ -1,14 +1,13 @@
 TwistedMinecraftAdmin
 =====================
 
-Java program to monitor and control Minecraft Server instances.
+#### Java program to monitor and control Minecraft Server instances.
 
 Created for the Twisted.cat servers but will work for any Server hosting Minecraft instances.
 Designed around how we manage and locate our Servers. Not guaranteed to work for another model in this early alpha stage.
 
 
-Notes
------
+#### Notes
 
  * You will need console access to your server to run this.
  * Currently OS interactions only work on Linux. Windows support will come after a stable release.
@@ -18,8 +17,7 @@ Notes
 Feature List
 ============
 
-Functionality
--------------
+### Functionality
 
     [100%] Local MinecraftServer instance discovery
     [ 90%] MinecraftServer Instance Querying
@@ -32,8 +30,7 @@ Functionality
     [  0%] Other server types monitoring (Teamspeak, web server, Server host online etc)
     
 
-User Interaction
-----------------
+### User Interaction
 
     [ 60%] Console Menu system for remote command line control of all Server interactions (ssh access).
     [  0%] Remote API. Running ServerMonitor that will accept requests from external sources.
