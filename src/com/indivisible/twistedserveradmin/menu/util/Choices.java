@@ -73,6 +73,16 @@ public class Choices
         return numSelectableChoices() != 0;
     }
 
+    /**
+     * Retrieve the List of Choices
+     * 
+     * @return
+     */
+    public List<Choice> getChoices()
+    {
+        return this.choices;
+    }
+
 
     ///////////////////////////////////////////////////////
     ////    public methods
@@ -98,6 +108,7 @@ public class Choices
             case header:
             case divider:
             case subchoice:
+            case blank:
                 choice = new Choice(text, choiceType);
                 break;
             default:
@@ -105,6 +116,19 @@ public class Choices
                         + choiceType.name());
         }
         choices.add(choice);
+    }
+
+    /**
+     * Append another Choices' Choices to this one.
+     * 
+     * @param appendChoices
+     */
+    public void add(Choices appendChoices)
+    {
+        for (Choice choice : appendChoices.getChoices())
+        {
+            this.choices.add(choice);
+        }
     }
 
     /**

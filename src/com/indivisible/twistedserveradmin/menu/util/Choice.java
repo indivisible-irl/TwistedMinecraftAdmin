@@ -130,6 +130,8 @@ public class Choice
                 return String.format(FORMAT_HEADER, text);
             case subchoice:
                 return String.format(FORMAT_SUBCHOICE, text);
+            case blank:
+                return "";
             default:
                 return "Error on Choice EChoiceType: " + choiceType.toString();
         }
