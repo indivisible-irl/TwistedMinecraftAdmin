@@ -23,6 +23,8 @@ Feature List
     [ 90%] MinecraftServer Instance Querying
     [ 20%] Linux Screen management
     [  0%] MinecraftServer Starting, Stopping, Killing etc
+    [  0%] Server Status monitor
+    [  0%] Notification (email, other) on Server errors.
     [  0%] Offline Player queries & control
     [  0%] Bukkit plugin for direct Server interaction
     [  0%] Online Player queries & control
