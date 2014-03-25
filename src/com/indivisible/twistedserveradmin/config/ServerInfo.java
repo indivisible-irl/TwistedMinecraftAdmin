@@ -35,6 +35,8 @@ public class ServerInfo
     private static final boolean DEFAULT_SHOW_IN_CONSOLE = true;
     private static final boolean DEFAULT_SHOW_IN_API = false;
 
+    //TODO: Default settings: More consistent retrieval with proper cascading
+
 
     ///////////////////////////////////////////////////////
     ////    constructor & init
@@ -53,7 +55,7 @@ public class ServerInfo
 
 
     ///////////////////////////////////////////////////////
-    ////    public methods
+    ////    retrieve values
     ///////////////////////////////////////////////////////
 
     /**
@@ -83,6 +85,7 @@ public class ServerInfo
         String vers = getString(VERSION);
         if (vers == null || vers.isEmpty())
         {
+            //ASK: return null instead and handle null in Server class?
             return DEFAULT_VERSION;
         }
         return vers;

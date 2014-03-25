@@ -7,7 +7,6 @@ import java.util.Map;
 import com.indivisible.twistedserveradmin.files.FileIterator;
 import com.indivisible.twistedserveradmin.system.Main;
 
-//TODO: use Main.myLog for errors and warnings
 
 /**
  * Parent class to parse a settings file and collect key, value pairs of the
@@ -299,12 +298,13 @@ abstract class Settings
     /**
      * Recursive method to strip out colour codes from the MOTD.<br/>
      * Borrowed from my MCServerPing application.<br/>
-     * (ASK: merge its functionality into this)
+     * ASK: merge any of its functionality into this app? <br />
+     * TODO: Move to util.StringUtil
      * 
      * @param name
      * @return
      */
-    protected String recurseRemoveMinecraftColor(String name)
+    protected String recurseRemoveMinecraftFormatting(String name)
     {
         int foundIndex = name.indexOf("§");
         if (foundIndex == -1)
@@ -313,13 +313,13 @@ abstract class Settings
         }
         if (foundIndex == 0)
         {
-            return recurseRemoveMinecraftColor(name.substring(2));
+            return recurseRemoveMinecraftFormatting(name.substring(2));
         }
         else
         {
             String start = name.substring(0, foundIndex);
             String end = name.substring(foundIndex + 2);
-            return recurseRemoveMinecraftColor(start.concat(end));
+            return recurseRemoveMinecraftFormatting(start.concat(end));
         }
     }
 
@@ -372,7 +372,8 @@ abstract class Settings
             }
             else if (!Character.isDigit(rawIP.charAt(i)))
             {
-                //System.out.println(" === Encountered non digit character in IP: " + rawIP);
+                Main.myLog
+                        .warning(TAG, "Encountered non digit character in IP: " + rawIP);
                 return false;
             }
         }
@@ -380,6 +381,7 @@ abstract class Settings
     }
 
     //ASK: Also test for IPv6??
-    //  
+    //Looks way too complicated to bother to attempt.
+    //Go with a try...catch model instead?
 
 }

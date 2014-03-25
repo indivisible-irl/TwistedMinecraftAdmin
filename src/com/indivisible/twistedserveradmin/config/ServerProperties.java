@@ -15,7 +15,9 @@ public class ServerProperties
         extends Settings
 {
 
-    //// data
+    ///////////////////////////////////////////////////////
+    ////    data
+    ///////////////////////////////////////////////////////
 
     //TODO: Test if all server types use same names (vanilla, bukkit, spiggot etc) 
     private static final String KEY_MOTD = "motd";
@@ -23,17 +25,20 @@ public class ServerProperties
     private static final String KEY_PORT = "server-port";
     private static final String KEY_IP = "server-ip";
     private static final String KEY_ONLINE_MODE = "online-mode";
-    //private static final String KEY_QUERY_PORT = "query.port";
-    //private static final String KEY_QUERY_ENABLED = "enable-query";
+    private static final String KEY_QUERY_PORT = "query.port";
+    private static final String KEY_QUERY_ENABLED = "enable-query";
     private static final String KEY_SEED = "level-seed";
     private static final String KEY_WHITELIST = "white-list";
     private static final String KEY_DIFFICULTY = "difficulty";
     private static final String KEY_PVP = "pvp";
+    //ASK: Any extra (possibly optional) keys?
 
     private static final String TAG = "ServerProps";
 
 
-    //// constructor && init
+    ///////////////////////////////////////////////////////
+    ////    constructor & init
+    ///////////////////////////////////////////////////////
 
     /**
      * Class to read and parse "server.properties" from a minecraft Server's
@@ -48,7 +53,9 @@ public class ServerProperties
     }
 
 
-    //// public methods
+    ///////////////////////////////////////////////////////
+    ////    retrieve values
+    ///////////////////////////////////////////////////////
 
     /**
      * Get the Server Message of the Day exactly as saved in the settings
@@ -75,7 +82,7 @@ public class ServerProperties
             return null;
         }
         String unescapedMOTD = unescapeUnicodeChars(motd);
-        return recurseRemoveMinecraftColor(unescapedMOTD);
+        return recurseRemoveMinecraftFormatting(unescapedMOTD);
     }
 
     /**
@@ -94,16 +101,6 @@ public class ServerProperties
     }
 
     /**
-     * Get the port the server is running on.
-     * 
-     * @return
-     */
-    public int getPort()
-    {
-        return getInt(KEY_PORT);
-    }
-
-    /**
      * Get the IP the server is running on. <br/>
      * If not set will be the Game Server's default address.
      * 
@@ -118,11 +115,22 @@ public class ServerProperties
         }
         else if (!testIPv4(ip))
         {
+            //TODO: Do or don't allow failed IPs
             Main.myLog
-                    .warning(TAG, "IP failed IPv4 test. Returning anyway: [" + ip + "]");
+                    .warning(TAG, "IP failed IPv4 test. Returning [" + ip + "] anyway.");
 
         }
         return ip;
+    }
+
+    /**
+     * Get the port the server is running on.
+     * 
+     * @return
+     */
+    public int getPort()
+    {
+        return getInt(KEY_PORT);
     }
 
 
@@ -185,6 +193,28 @@ public class ServerProperties
     public int getDifficulty()
     {
         return getInt(KEY_DIFFICULTY);
+    }
+
+    /**
+     * Check if the Server has extended Queries enabled.
+     * 
+     * @return
+     */
+    public boolean isQueryEnabled()
+    {
+        return getBool(KEY_QUERY_ENABLED);
+    }
+
+    /**
+     * Retrieve the port the Server is listening on for extended Query
+     * requests. <br />
+     * Remember to test isQueryEnabled() if you intend to Query on this.
+     * 
+     * @return
+     */
+    public String getQueryPort()
+    {
+        return getString(KEY_QUERY_PORT);
     }
 
 

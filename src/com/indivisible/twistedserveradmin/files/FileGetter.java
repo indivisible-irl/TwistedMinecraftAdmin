@@ -23,19 +23,23 @@ import com.indivisible.twistedserveradmin.system.Main;
 public class FileGetter
 {
 
-    //RET: prepare new instance
 
-    //// data
+    ///////////////////////////////////////////////////////
+    ////    data
+    ///////////////////////////////////////////////////////
 
-    private static final String RESOURCE_FOLDER = "/res/";
-    private static final String APP_SETTINGS_FILENAME = "settings.cfg";
-    private static final String SERVER_LIST_FILENAME = "servers.list";
-    private static final String INFO_FILENAME = "server.info";
-    private static final String PROPS_FILENAME = "server.properties";
+    private static final String RESOURCE_FOLDER = "/res/";                  // internal folder
+    private static final String APP_SETTINGS_FILENAME = "settings.cfg";     // application settings
+    private static final String SERVER_LIST_FILENAME = "servers.list";      // list of roots
+    private static final String INFO_FILENAME = "server.info";              // default server info
+    private static final String PROPS_FILENAME = "server.properties";       // MC settings file
+
     private static final String TAG = "FileGetter";
 
 
-    //// public methods
+    ///////////////////////////////////////////////////////
+    ////    public methods
+    ///////////////////////////////////////////////////////
 
     /**
      * Gather all the directories from a folder
@@ -92,8 +96,8 @@ public class FileGetter
     }
 
     /**
-     * Retrieve the File that should contain the list of directories
-     * containing server instance folders.<br/>
+     * Retrieve the File that should contain the list of directories that
+     * themselves contain the Server instance folders.
      * 
      * @return
      */
@@ -333,18 +337,8 @@ public class FileGetter
         URL resUrl = FileGetter.class.getResource(RESOURCE_FOLDER + filename);
         String badPath = resUrl.getPath();
         String goodPath = badPath.substring(badPath.indexOf("!") + 1);
-        //System.out.println("    - Trying to reach: " + goodPath);
         InputStream input = FileGetter.class.getResourceAsStream(goodPath);
-
         return input;
-        //        if (input == null)
-        //        {
-        //            throw new FileNotFoundException("Could not read internal file: " + filename);
-        //        }
-        //        else
-        //        {
-        //            return input;
-        //        }
     }
 
     /**
@@ -497,7 +491,8 @@ public class FileGetter
     }
 
     /**
-     * Prepare a Server instance for use with this tool.
+     * Prepare a Server instance for use with this tool. <br />
+     * TODO: ServerPrep: Move to own class with better tests & UI config.
      * 
      * @param serverInstanceFolder
      * @return
@@ -508,10 +503,11 @@ public class FileGetter
         MinecraftServer serverInstance = new MinecraftServer(serverInstanceFolder);
         if (!serverInstance.isServer())
         {
-            System.out.println("Not a valid Minecraft Server folder:\n\t"
+            Main.myLog.warning(TAG, "Not a valid Minecraft Server folder:\n\t"
                     + serverInstanceFolder.getAbsolutePath());
-            System.out
-                    .println("If this is a Minecraft Server please ensure you have run it at least once to generate the server files.");
+            Main.myLog
+                    .warning(TAG,
+                             "If this is a Minecraft Server please ensure you have run it at least once to generate the server files.");
             return false;
         }
         else

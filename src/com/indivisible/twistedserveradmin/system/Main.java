@@ -78,11 +78,14 @@ public class Main
         boolean rootFilesExist = FileGetter.ensureRootFilesExist();
         if (!rootFilesExist)
         {
+            Main.myLog
+                    .error(TAG,
+                           "Root files not OK. Cannot continue without them. Quitting...");
             System.exit(1);
         }
         else
         {
-            Main.myLog.verbose(TAG, "");
+            Main.myLog.verbose(TAG, "Root Files OK");
         }
     }
 
@@ -105,7 +108,7 @@ public class Main
 
 
     ///////////////////////////////////////////////////////
-    ////    status codes
+    ////    exit status codes
     ///////////////////////////////////////////////////////
 
     //TODO: document status codes for release
