@@ -421,7 +421,7 @@ public class MinecraftServer
     }
 
     /**
-     * Perform a query on the Server using a default timeout (1.25 secs).
+     * Perform a query on the Server using a default timeout (4 secs).
      * 
      * @return Returns false on offline or null on failure.
      */

@@ -20,6 +20,11 @@ import java.nio.charset.Charset;
 import com.indivisible.twistedserveradmin.servers.ServerStatus;
 import com.indivisible.twistedserveradmin.system.Main;
 
+/**
+ * Class to contain and perform a single, basic Query on a Minecraft Server.
+ * 
+ * @author indiv
+ */
 public final class MinecraftServerQuery
 {
 
@@ -45,93 +50,186 @@ public final class MinecraftServerQuery
 
     private static final String TAG = "MCServerQuery";
 
+
     ///////////////////////////////////////////////////////
     ////    constructors
     ///////////////////////////////////////////////////////
 
+    /**
+     * Create a new MinecraftServerQuery instance.
+     * 
+     * @param address
+     * @param port
+     * @param timeout
+     */
     public MinecraftServerQuery(String address, int port, int timeout)
     {
+        //TODO: Just take a single Server argument.
         this.address = address;
         this.port = port;
         this.timeout = timeout;
     }
 
+
     ///////////////////////////////////////////////////////
     ////    gets & sets
     ///////////////////////////////////////////////////////
 
-    private void setPingVersion(int pingVersion)
+    /**
+     * Set the Server's ping version.
+     * 
+     * @param pingVersion
+     */
+    protected void setPingVersion(int pingVersion)
     {
         this.pingVersion = pingVersion;
     }
 
+    /**
+     * Get the Server's ping version.
+     * 
+     * @return
+     */
     public int getPingVersion()
     {
+        //TODO: Look into MCServer.pingVersion
         return this.pingVersion;
     }
 
-    private void setProtocolVersion(int protocolVersion)
+    /**
+     * Set the Server's query protocol version.
+     * 
+     * @param protocolVersion
+     */
+    protected void setProtocolVersion(int protocolVersion)
     {
         this.protocolVersion = protocolVersion;
     }
 
+    /**
+     * Get the Server's query protocol version.
+     * 
+     * @return
+     */
     public int getProtocolVersion()
     {
+        //TODO: Look into MCServer.protocolVersion
         return this.protocolVersion;
     }
 
-    private void setGameVersion(String gameVersion)
+    /**
+     * Set the Server's game version.
+     * 
+     * @param gameVersion
+     */
+    protected void setGameVersion(String gameVersion)
     {
         this.gameVersion = gameVersion;
     }
 
+    /**
+     * Get the Server's game version.
+     * 
+     * @return
+     */
     public String getGameVersion()
     {
+        //TODO: Test and actually use this value
         return this.gameVersion;
     }
 
-    private void setPlayersOnline(int playersOnline)
+    /**
+     * Set the number of players online.
+     * 
+     * @param playersOnline
+     */
+    protected void setPlayersOnline(int playersOnline)
     {
         this.playersOnline = playersOnline;
     }
 
+    /**
+     * Get the number of players online.
+     * 
+     * @return
+     */
     public int getPlayersOnline()
     {
         return this.playersOnline;
     }
 
-    private void setMaxPlayers(int maxPlayers)
+    /**
+     * Set the maximum allowed players online.
+     * 
+     * @param maxPlayers
+     */
+    protected void setMaxPlayers(int maxPlayers)
     {
         this.maxPlayers = maxPlayers;
     }
 
+    /**
+     * Get the maximum allowed players online.
+     * 
+     * @return
+     */
     public int getMaxPlayers()
     {
         return this.maxPlayers;
     }
 
-    private void setResponse(Boolean response)
+    /**
+     * Set whether the query received a response form the Server.
+     * 
+     * @param response
+     */
+    protected void setResponse(Boolean response)
     {
         this.response = response;
     }
 
+    /**
+     * Get whether the query received a response from the Server.
+     * 
+     * @return
+     */
     public Boolean receivedResponse()
     {
         return response;
     }
 
+    /**
+     * Get the time, in epoch milliseconds, this query was last run.
+     * 
+     * @return
+     */
     public long getTimeLastRun()
     {
         return timeLastRun;
     }
 
+    /**
+     * Set the status of the queried Server.
+     * 
+     * @param status
+     */
+    protected void setServerStatus(ServerStatus status)
+    {
+        this.serverStatus = status;
+    }
+
+    /**
+     * Get the status of the queried Server.
+     * 
+     * @return
+     */
     public ServerStatus getServerStatus()
     {
         return serverStatus;
     }
 
     ///////////////////////////////////////////////////////
-    ////    methods
+    ////    query methods
     ///////////////////////////////////////////////////////
 
     /**
@@ -154,72 +252,56 @@ public final class MinecraftServerQuery
             socket.setSoTimeout(timeout);
 
             socket.connect(new InetSocketAddress(address, port), timeout);
-            //System.out.println("socket connected");
-
             outputStream = socket.getOutputStream();
             dataOutputStream = new DataOutputStream(outputStream);
-            //System.out.println("socket output");
 
             inputStream = socket.getInputStream();
             inputStreamReader = new InputStreamReader(inputStream,
                     Charset.forName("UTF-16BE"));
-            //System.out.println("socket input");
 
             dataOutputStream.write(new byte[] {
                     (byte) 0xFE, (byte) 0x01
             });
-            //System.out.println("sent query");
 
             int packetId = inputStream.read();
-            //System.out.println("read query");
-
             if (packetId == -1)
             {
                 socket.close();
-                //System.out.println("Premature end of stream");
-                throw new IOException("Premature end of stream.");
+                throw new IOException("mcdev: Premature end of stream.");
             }
 
             if (packetId != 0xFF)
             {
                 socket.close();
-                //System.out.println("Invalid packet ID");
-                throw new IOException("Invalid packet ID (" + packetId + ").");
+                throw new IOException("mcdev: Invalid packet ID (" + packetId + ").");
             }
 
             int length = inputStreamReader.read();
-
             if (length == -1)
             {
                 socket.close();
-                //System.out.println("Premature 2");
-                throw new IOException("Premature end of stream.");
+                throw new IOException("mcdev: Premature end of stream.");
             }
-
-            if (length == 0)
+            else if (length == 0)
             {
                 socket.close();
-                //System.out.println("Invalid string length");
-                throw new IOException("Invalid string length.");
+                throw new IOException("mcdev: Invalid string length.");
             }
 
             char[] chars = new char[length];
-
             if (inputStreamReader.read(chars, 0, length) != length)
             {
                 socket.close();
-                //System.out.println("Premature 3");
-                throw new IOException("Premature end of stream.");
+                throw new IOException("mcdev: Premature end of stream.");
             }
 
             String string = new String(chars);
-
-            if (string.startsWith("§"))
+            if (string.startsWith("§"))         //TODO: Test which versions use which format
             {
                 String[] data = string.split("\0");
                 this.setPingVersion(Integer.parseInt(data[0].substring(1)));
                 this.setProtocolVersion(Integer.parseInt(data[1]));
-                this.setGameVersion(data[2]);
+                this.setGameVersion(data[2]);   //TODO: Test this value across versions
                 this.setPlayersOnline(Integer.parseInt(data[4]));
                 this.setMaxPlayers(Integer.parseInt(data[5]));
             }
@@ -234,8 +316,8 @@ public final class MinecraftServerQuery
         {
             setResponse(false);
             Main.myLog.info(TAG, "Failed to connect to " + address + ":" + port);
-            //ASK: socket exception means offline? Need to test
-            serverStatus = ServerStatus.offline;
+            //ASK: any socket exception means offline? need to test
+            setServerStatus(ServerStatus.offline);
             //e.printStackTrace();
             return false;
         }
@@ -244,7 +326,7 @@ public final class MinecraftServerQuery
             setResponse(false);
             Main.myLog.error(TAG, "Socket for Query timed out for " + address + ":"
                     + port);
-            serverStatus = ServerStatus.error;
+            setServerStatus(ServerStatus.error);
             //NOTE: BTeam was crashed (OutOfMemoryError) and threw to here.
             return false;
         }
@@ -253,7 +335,7 @@ public final class MinecraftServerQuery
             setResponse(false);
             Main.myLog.error(TAG, "IOException -- " + address + ":" + port + " / "
                     + timeout);
-            serverStatus = ServerStatus.error;
+            setServerStatus(ServerStatus.error);
             e.printStackTrace();
             return false;
         }
@@ -316,7 +398,7 @@ public final class MinecraftServerQuery
             }
         }
 
-        serverStatus = ServerStatus.online;
+        setServerStatus(ServerStatus.online);
         setResponse(true);
         return true;
     }

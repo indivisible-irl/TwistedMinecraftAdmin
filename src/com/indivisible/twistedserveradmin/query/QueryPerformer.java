@@ -29,8 +29,8 @@ public class QueryPerformer
     private List<MinecraftServer> serversIn;
     private List<MinecraftServer> serversOut;
 
-    public static final long DEFAULT_QUERY_VALID_AGE = 8000L;
-    private static final int DEFAULT_MAX_THREADS = 3;
+    public static final long DEFAULT_QUERY_VALID_AGE = 8000L;   //TODO: read from app settings
+    private static final int DEFAULT_MAX_THREADS = 3;           //TODO: Move max threads to app settings
     private static final String TAG = "QueryPerformer";
 
 
@@ -97,10 +97,10 @@ public class QueryPerformer
     }
 
     /**
-     * Refresh or run new Queries for all Servers with stale info. <br />
-     * maxAge is the maximum acceptable Query age.
+     * Refresh or run new Queries for all Servers with stale info.
      * 
      * @param maxAge
+     *        the maximum acceptable Query age in milliseconds.
      * @return
      */
     public List<MinecraftServer> queryAllServers(long maxAge)
@@ -143,13 +143,11 @@ public class QueryPerformer
         }
         executor.shutdown();
 
-        Long secsDiffLong = new Long(DateTime.now().getMillis() - timeStarted);
-        Double secsDiff = new Double(secsDiffLong.doubleValue()) / (double) 1000.0;
-        Main.myLog.debug(TAG,
-                         String.format("== In: %d,  Out: %d, Secs: %.2f",
-                                       serversIn.size(),
-                                       serversOut.size(),
-                                       secsDiff));
+        long secsDiff = (DateTime.now().getMillis() - timeStarted) / 1000;
+        Main.myLog.info(TAG, String.format("Queried %d of %d Servers in %.2f seconds.",
+                                           serversOut.size(),
+                                           serversIn.size(),
+                                           secsDiff));
         return serversOut;
     }
 
@@ -197,6 +195,8 @@ public class QueryPerformer
     private class CallQuery
             implements Callable<MinecraftServer>
     {
+
+        //TODO: Custom query timeouts pass on to query
 
         private MinecraftServer server;
 
