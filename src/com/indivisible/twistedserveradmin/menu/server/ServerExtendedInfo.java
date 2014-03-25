@@ -6,8 +6,15 @@ import org.joda.time.DateTime;
 import com.indivisible.twistedserveradmin.menu.base.Menu;
 import com.indivisible.twistedserveradmin.menu.base.MenuDisplay;
 import com.indivisible.twistedserveradmin.servers.MinecraftServer;
+import com.indivisible.twistedserveradmin.util.StringColor;
+import com.indivisible.twistedserveradmin.util.StringColor.Color;
 
 
+/**
+ * Simple Menu for displaying more in depth information on a Server.
+ * 
+ * @author indiv
+ */
 public class ServerExtendedInfo
         extends MenuDisplay
 {
@@ -19,10 +26,10 @@ public class ServerExtendedInfo
     private static final String title = "Minecraft Server";
     private static final String description = null;
 
-    private static String FORMAT_SUBTITLE = "Displaying info for " + Menu.ANSI_BLUE
-            + "%s" + "" + Menu.ANSI_RESET + ":";
-    private static String FORMAT_INFO = Menu.PADDING_LARGE + Menu.ANSI_CYAN + "%15s"
-            + Menu.PADDING_SMALL + Menu.ANSI_RESET + "%s";
+    private static String FORMAT_INFO = Menu.PADDING_LARGE + "%15s" + Menu.PADDING_SMALL
+            + "%s";
+    private static String FORMAT_FIELD = "%15s";
+    private static Color COLOR_FIELD = Color.CYAN;
 
     private static String FIELD_LOCATION = "Location";
 
@@ -52,6 +59,11 @@ public class ServerExtendedInfo
     ////    constructor
     ///////////////////////////////////////////////////////
 
+    /**
+     * Make a new Menu with extended information about a Server.
+     * 
+     * @param server
+     */
     public ServerExtendedInfo(MinecraftServer server)
     {
         super(title, description, true);
@@ -75,31 +87,42 @@ public class ServerExtendedInfo
     ////    content generation
     ///////////////////////////////////////////////////////
 
+    /**
+     * Generate the informational content for display
+     * 
+     * @param server
+     * @return
+     */
     private static List<String> makeServerInfoContent(MinecraftServer server)
     {
         List<String> lines = new ArrayList<String>();
 
         lines.add("");
-        lines.add(String.format(FORMAT_SUBTITLE, server.getName()));
+        lines.add(getSubtitle(server.getName()));
         lines.add("");
+
         lines.add(infoLine(FIELD_LOCATION, server.getServerPath()));
         lines.add("");
+
         lines.add(infoLine(FIELD_MOTD, server.getMOTD()));
         lines.add(infoLine(FIELD_VERSION, server.getVersion()));
         lines.add(infoLine(FIELD_SERVER_STATUS, server.getServerStatus().toString()));
         lines.add(infoLine(FIELD_LAST_QUERIED, getLastQuery(server)));
         lines.add(infoLine(FIELD_PLAYERS_ONLINE, getPlayersOnline(server)));
         lines.add("");
+
         lines.add(infoLine(FIELD_IP, server.getIP()));
         lines.add(infoLine(FIELD_PORT, new Integer(server.getPort()).toString()));
         lines.add(infoLine(FIELD_WHITELIST, getYesNo(server.isWhitelist())));
         lines.add(infoLine(FIELD_PVP, getYesNo(server.isPvP())));
         lines.add(infoLine(FIELD_DIFFICULTY, getDifficulty(server)));
         lines.add("");
+
         lines.add(infoLine(FIELD_PROPS, getYesNo(server.hasProperties())));
         lines.add(infoLine(FIELD_INFO, getYesNo(server.hasInfo())));
         lines.add(infoLine(FIELD_STARTUP, server.getStartupScriptFile().getName()));
         lines.add("");
+
         lines.add(infoLine(FIELD_MONITORED, getYesNo(server.isMonitoredServer())));
         lines.add(infoLine(FIELD_BATCH_START, getYesNo(server.doBatchStart())));
         lines.add(infoLine(FIELD_BATCH_STOP, getYesNo(server.doBatchStop())));
@@ -109,11 +132,42 @@ public class ServerExtendedInfo
         return lines;
     }
 
-    private static String infoLine(String fieldName, String value)
+    /**
+     * Make the intro line containing the Server's name.
+     * 
+     * @param name
+     * @return
+     */
+    private static String getSubtitle(String name)
     {
-        return String.format(FORMAT_INFO, fieldName, value);
+        StringBuilder sb = new StringBuilder();
+        sb.append("Displaying info for ");
+        sb.append(StringColor.format(name, Color.BLUE));
+        sb.append(":");
+        return sb.toString();
     }
 
+    /**
+     * Make a standardised info line, two column, centre justified.
+     * 
+     * @param fieldName
+     * @param value
+     * @return
+     */
+    private static String infoLine(String fieldName, String value)
+    {
+        String fieldLabel = StringColor.format(String.format(FORMAT_FIELD, fieldName),
+                                               COLOR_FIELD);
+        return String.format(FORMAT_INFO, fieldLabel, value);
+    }
+
+    /**
+     * Make a printable representation of the age of the last performed
+     * ServerQuery.
+     * 
+     * @param server
+     * @return
+     */
     private static String getLastQuery(MinecraftServer server)
     {
         long lastQuery;
@@ -125,10 +179,17 @@ public class ServerExtendedInfo
         {
             return "---";
         }
+        //TODO: Move printable age to DateTimeUtil (add mins, hrs etc to it also)
         double queryAgeSecs = (double) lastQuery / 1000.0;
         return String.format("%.1f secs ago", queryAgeSecs);
     }
 
+    /**
+     * Get a printable representation of the current players online.
+     * 
+     * @param server
+     * @return
+     */
     private static String getPlayersOnline(MinecraftServer server)
     {
         int playersOnline = server.getPlayersOnline();
@@ -143,6 +204,12 @@ public class ServerExtendedInfo
         }
     }
 
+    /**
+     * Get a textual representation of the Server's assigned difficulty.
+     * 
+     * @param server
+     * @return
+     */
     private static String getDifficulty(MinecraftServer server)
     {
         int difficulty = server.getDifficulty();
@@ -161,6 +228,13 @@ public class ServerExtendedInfo
         }
     }
 
+    /**
+     * Make a Boolean value more readable. <br />
+     * TODO: Move to StringUtil
+     * 
+     * @param value
+     * @return
+     */
     private static String getYesNo(Boolean value)
     {
         if (value == null)

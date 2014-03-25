@@ -6,6 +6,9 @@ import com.indivisible.twistedserveradmin.menu.util.Choices;
 import com.indivisible.twistedserveradmin.menu.util.EChoiceType;
 import com.indivisible.twistedserveradmin.servers.MinecraftServer;
 import com.indivisible.twistedserveradmin.servers.ServerStatus;
+import com.indivisible.twistedserveradmin.system.Main;
+import com.indivisible.twistedserveradmin.util.StringColor;
+import com.indivisible.twistedserveradmin.util.StringColor.Color;
 
 /**
  * Single class to supply common static methods for ServerMenu utilisation.
@@ -19,16 +22,25 @@ public class ServerListUtil
     ////    data
     ///////////////////////////////////////////////////////
 
-    private static final String FORMAT_SERVER_INFO = "%s   %s   %2s   %s";  // online | version | players | nick
-    private static final String HEADER_SUMMARY_BLOCK = "Server summary:";
+    private static final Color COLOR_FIELD = Color.WHITE;
+    private static final Color COLOR_NO_NUM = Color.BLUE;
+    private static final Color COLOR_OK = Color.GREEN;
+    private static final Color COLOR_WARN = Color.YELLOW;
+    private static final Color COLOR_ERROR = Color.RED;
+    private static final Color COLOR_PLAIN = Color.CYAN;
+    private static final Color COLOR_NUM = Color.YELLOW;
 
+    private static final String FORMAT_SERVER_INFO = "%s   %s   %2s   %s";  // online | version | players | nick
     private static final String FORMAT_NUMS = "%2d";
-    private static final String FORMAT_NONE = " -";
-    private static final String FORMAT_ONLINE = "Online   ";
-    private static final String FORMAT_OFFLINE = "Offline  ";
-    private static final String FORMAT_UNKNOWN = "Unknown  ";
-    private static final String FORMAT_ERRORED = "Errored  ";
-    private static final String FORMAT_PLAYERS = "%s players playing on %s of %s Servers";
+
+    private static final String HEADER_SUMMARY_BLOCK = "Server summary:";
+    private static final String NO_NUMBER = " -";
+    private static final String FIELD_ONLINE = "Online   ";
+    private static final String FIELD_OFFLINE = "Offline  ";
+    private static final String FIELD_UNKNOWN = "Unknown  ";
+    private static final String FIELD_ERRORED = "Errored  ";
+
+    private static final String TAG = "ServerListUtil";
 
 
     ///////////////////////////////////////////////////////
@@ -145,6 +157,8 @@ public class ServerListUtil
                     serversErrored++;
                     break;
                 default:
+                    Main.myLog.error(TAG, "Uncaught serverState: " + server.getName()
+                            + " || " + server.getServerStatus().name());
                     break;
             }
         }
@@ -171,7 +185,8 @@ public class ServerListUtil
     ///////////////////////////////////////////////////////
 
     /**
-     * Get a standardised line with Server's info.
+     * Get a standardised line with Server's info. <br />
+     * Format: "online | version | players | nickname"
      * 
      * @param server
      * @return
@@ -204,6 +219,12 @@ public class ServerListUtil
                              serverName);
     }
 
+    /**
+     * Get a header line for display above serverInfoLine(). <br />
+     * Format: "online | version | players | nickname"
+     * 
+     * @return
+     */
     private static String getServerListHeader()
     {
         //FORMAT_SERVER_INFO = "%s   %s   %2s   %s";
@@ -215,57 +236,133 @@ public class ServerListUtil
         return String.format(FORMAT_SERVER_INFO, status, version, players, nickname);
     }
 
+    /**
+     * Create the first line of the summary of current Server usage. <br />
+     * Format: "Online:   %2d" + PADDING_SMALL + "Unknown:  %2d"
+     * 
+     * @param serversOnline
+     * @param serversUnknown
+     * @return
+     */
     private static String makeSummaryLine1(int serversOnline, int serversUnknown)
     {
         //FORMAT_SUMMARY_LINE1 = "Online:   %2d      Unknown:  %2d";
         StringBuilder sb = new StringBuilder();
-        sb.append(Menu.ANSI_WHITE).append(FORMAT_ONLINE);
-        if (serversOnline > 0)
-            sb.append(Menu.ANSI_GREEN).append(String.format(FORMAT_NUMS, serversOnline));
-        else
-            sb.append(Menu.ANSI_BLUE).append(FORMAT_NONE);
+        sb.append(colorField(FIELD_ONLINE));
+        sb.append(colorNumOk(serversOnline));
         sb.append(Menu.PADDING_SMALL);
-        sb.append(Menu.ANSI_WHITE).append(FORMAT_UNKNOWN);
-        if (serversUnknown > 0)
-            sb.append(Menu.ANSI_YELLOW)
-                    .append(String.format(FORMAT_NUMS, serversUnknown));
-        else
-            sb.append(Menu.ANSI_BLUE).append(FORMAT_NONE);
-        sb.append(Menu.ANSI_RESET);
+        sb.append(colorField(FIELD_UNKNOWN));
+        sb.append(colorNumError(serversUnknown));
         return sb.toString();
     }
 
+    /**
+     * Create the second line of the summary of current Server usage. <br />
+     * Format: "Offline:  %2d" + PADDING_SMALL + "Errored:  %2d"
+     * 
+     * @param serversOffline
+     * @param serversErrored
+     * @return
+     */
     private static String makeSummaryLine2(int serversOffline, int serversErrored)
     {
         //FORMAT_SUMMARY_LINE2 = "Offline:  %2d      Errored:  %2d";
         StringBuilder sb = new StringBuilder();
-        sb.append(Menu.ANSI_WHITE).append(FORMAT_OFFLINE);
-        if (serversOffline > 0)
-            sb.append(Menu.ANSI_PURPLE)
-                    .append(String.format(FORMAT_NUMS, serversOffline));
-        else
-            sb.append(Menu.ANSI_BLUE).append(FORMAT_NONE);
+        sb.append(colorField(FIELD_OFFLINE));
+        sb.append(colorNumWarn(serversOffline));
         sb.append(Menu.PADDING_SMALL);
-        sb.append(Menu.ANSI_WHITE).append(FORMAT_ERRORED);
-        if (serversErrored > 0)
-            sb.append(Menu.ANSI_RED).append(String.format(FORMAT_NUMS, serversErrored));
-        else
-            sb.append(Menu.ANSI_BLUE).append(FORMAT_NONE);
-        sb.append(Menu.ANSI_RESET);
+        sb.append(colorField(FIELD_ERRORED));
+        sb.append(colorNumError(serversErrored));
         return sb.toString();
     }
 
+    /**
+     * Create the third line of the summary of current Server usage. <br />
+     * Format: "%d players playing on %d of %d Servers"
+     * 
+     * @param totalPlayersOnline
+     * @param serversWithPlayers
+     * @param totalServers
+     * @return
+     */
     private static String makeSummaryLine3(int totalPlayersOnline,
                                            int serversWithPlayers,
                                            int totalServers)
     {
-        String YELL = Menu.ANSI_YELLOW;
-        String CYAN = Menu.ANSI_CYAN;
-
-        //FORMAT_SUMMARY_LINE3 = "%2d players playing on %2d of %2d Servers";
-        String playingNow = YELL + totalPlayersOnline + CYAN;
-        String occupiedServers = YELL + serversWithPlayers + CYAN;
-        String numServers = YELL + totalServers + CYAN;
-        return String.format(FORMAT_PLAYERS, playingNow, occupiedServers, numServers);
+        //FORMAT_SUMMARY_LINE3 = "%d players playing on %d of %d Servers";
+        StringBuilder sb = new StringBuilder();
+        sb.append(StringColor.format(totalPlayersOnline + "", COLOR_NUM));
+        sb.append(StringColor.format(" players playing on ", COLOR_PLAIN));
+        sb.append(StringColor.format(serversWithPlayers + "", COLOR_NUM));
+        sb.append(StringColor.format(" of ", COLOR_PLAIN));
+        sb.append(StringColor.format(totalServers + "", COLOR_NUM));
+        sb.append(StringColor.format(" Servers", COLOR_PLAIN));
+        return sb.toString();
     }
+
+    /**
+     * Colour a Field name.
+     * 
+     * @param text
+     * @return
+     */
+    private static String colorField(String text)
+    {
+        return StringColor.format(text, COLOR_FIELD);
+    }
+
+    /**
+     * Colour a number. Bigger is better.
+     * 
+     * @param num
+     * @return
+     */
+    private static String colorNumOk(int num)
+    {
+        return colorNum(num, COLOR_OK);
+    }
+
+    /**
+     * Colour a number. Increasing value could be an issue.
+     * 
+     * @param num
+     * @return
+     */
+    private static String colorNumWarn(int num)
+    {
+        return colorNum(num, COLOR_WARN);
+    }
+
+    /**
+     * Colour a number. Any value could be a problem.
+     * 
+     * @param num
+     * @return
+     */
+    private static String colorNumError(int num)
+    {
+        return colorNum(num, COLOR_ERROR);
+    }
+
+    /**
+     * Colour a number with the supplied Color if 'num > 0'. <br />
+     * Otherwise return a ' -'
+     * 
+     * @param num
+     * @param color
+     * @return
+     */
+    private static String colorNum(int num, Color color)
+    {
+        if (num > 0)
+        {
+            return StringColor.format(String.format(FORMAT_NUMS, num), color);
+        }
+        else
+        {
+            return StringColor.format(NO_NUMBER, COLOR_NO_NUM);
+        }
+    }
+
+
 }

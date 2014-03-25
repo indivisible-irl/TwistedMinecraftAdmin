@@ -1,6 +1,7 @@
 package com.indivisible.twistedserveradmin.servers;
 
-import com.indivisible.twistedserveradmin.menu.base.Menu;
+import com.indivisible.twistedserveradmin.util.StringColor;
+import com.indivisible.twistedserveradmin.util.StringColor.Color;
 
 
 /**
@@ -108,34 +109,33 @@ public enum ServerStatus
      */
     private static String getColoredString(ServerStatus status, boolean fixedWidth)
     {
-        StringBuilder output = new StringBuilder();
-
+        Color col;
         switch (status)
         {
             case online:
-                output.append(Menu.ANSI_GREEN);
+                col = Color.GREEN;
                 break;
             case offline:
-                output.append(Menu.ANSI_PURPLE);
+                col = Color.MAGENTA;
                 break;
             case error:
-                output.append(Menu.ANSI_RED);
+                col = Color.RED;
                 break;
             case unknown:
             default:
-                output.append(Menu.ANSI_YELLOW);
+                col = Color.YELLOW;
                 break;
         }
         if (fixedWidth)
         {
-            output.append(getStringFixedWidth(status));
+            return StringColor.format(getStringFixedWidth(status), col);
+            //output.append(getStringFixedWidth(status));
         }
         else
         {
-            output.append(getString(status));
+            return StringColor.format(getString(status), col);
+            //output.append(getString(status));
         }
-        output.append(Menu.ANSI_RESET);
-        return output.toString();
     }
 
 }

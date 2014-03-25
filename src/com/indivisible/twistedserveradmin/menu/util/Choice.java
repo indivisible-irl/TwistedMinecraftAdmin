@@ -1,6 +1,8 @@
 package com.indivisible.twistedserveradmin.menu.util;
 
 import com.indivisible.twistedserveradmin.menu.base.Menu;
+import com.indivisible.twistedserveradmin.util.StringColor;
+import com.indivisible.twistedserveradmin.util.StringColor.Color;
 
 
 /**
@@ -21,18 +23,20 @@ public class Choice
     private String text;
     //private Object object;
 
+    private static final Color COLOR_HEADER = Color.YELLOW;
+    private static final Color COLOR_DIVIDER = Color.CYAN;
+
     // formatting and padding
     protected static final String FORMAT_NUMBERING = "(%2s)";
-    protected static final String PADDING_NUMBERING = "    ";   // to match width of FORMAT_NUMBERING
+    protected static final String PADDING_NUMBERING = "    ";   // !! to match width of FORMAT_NUMBERING
     protected static final String FORMAT_CHOICE = Menu.PADDING_LARGE + "%s"
             + Menu.PADDING_SMALL + "%s";
     protected static final String FORMAT_SUBCHOICE = Menu.PADDING_LARGE + FORMAT_CHOICE;
     protected static final String FORMAT_UNSELECTABLE = Menu.PADDING_LARGE
             + Menu.PADDING_SMALL + PADDING_NUMBERING + "%s";
     protected static final String FORMAT_HEADER = Menu.PADDING_LARGE + Menu.PADDING_SMALL
-            + PADDING_NUMBERING + Menu.ANSI_YELLOW + "%s";
-    protected static final String FORMAT_DIVIDER = Menu.PADDING_SMALL + Menu.ANSI_CYAN
-            + "%s" + Menu.ANSI_RESET;
+            + PADDING_NUMBERING + "%s";
+    protected static final String FORMAT_DIVIDER = Menu.PADDING_SMALL + "%s";
 
 
     //Enum Types: header, divider, selectable, unselectable
@@ -125,9 +129,11 @@ public class Choice
             case unselectable:
                 return String.format(FORMAT_UNSELECTABLE, text);
             case divider:
-                return String.format(FORMAT_DIVIDER, text);
+                return StringColor.format(String.format(FORMAT_DIVIDER, text),
+                                          COLOR_DIVIDER);
             case header:
-                return String.format(FORMAT_HEADER, text);
+                return StringColor.format(String.format(FORMAT_HEADER, text),
+                                          COLOR_HEADER);
             case subchoice:
                 return String.format(FORMAT_SUBCHOICE, text);
             case blank:
