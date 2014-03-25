@@ -100,6 +100,7 @@ public class ServerManager
                     Main.myLog.warning(TAG, "Not a folder or inaccessible: " + line);
                 }
             }
+            iter.close();
         }
         if (rootFolders.isEmpty())
         {
