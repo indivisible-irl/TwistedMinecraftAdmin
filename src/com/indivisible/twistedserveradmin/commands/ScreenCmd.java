@@ -56,7 +56,9 @@ public class ScreenCmd
         }
         else if (args.size() == 1)
         {
-            //RET
+            //RET: ScreenCmd argument handling
+            throw new IllegalArgumentException(
+                    "Haven't written this bit yet. Come back later");
         }
 
 
