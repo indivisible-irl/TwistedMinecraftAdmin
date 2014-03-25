@@ -1,6 +1,11 @@
 package com.indivisible.twistedserveradmin.logging;
 
 
+/**
+ * Enumerator for the various Logging Levels.
+ * 
+ * @author indiv
+ */
 public enum LogLevel
 {
 

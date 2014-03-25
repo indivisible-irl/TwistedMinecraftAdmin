@@ -4,13 +4,21 @@ import java.io.File;
 import com.indivisible.twistedserveradmin.util.DateTimeUtil;
 
 
+/**
+ * Class to handle all writes to log files, logging db and console debug/info
+ * printing.
+ * 
+ * @author indiv
+ * 
+ */
 public class MyLog
 {
 
-    //TODO: logging - use util.Logging
-    //ASK: log to db?
+    //ASK: logging - use util.Logging?
 
-    //// data
+    ///////////////////////////////////////////////////////
+    ////    data
+    ///////////////////////////////////////////////////////
 
     //private File logFile = null;
     //private Level loggingLevel;
@@ -37,7 +45,9 @@ public class MyLog
     //private static String FORMAT_SUBSEQUENT = "    -  %s";
 
 
-    //// constructor
+    ///////////////////////////////////////////////////////
+    ////    constructor
+    ///////////////////////////////////////////////////////
 
     public MyLog(File logFile, LogLevel logLevel, LogLevel printLevel)
     {
@@ -46,56 +56,72 @@ public class MyLog
     }
 
 
-    //// public methods
+    ///////////////////////////////////////////////////////
+    ////    public methods
+    ///////////////////////////////////////////////////////
 
+    /**
+     * Log an error message.
+     * 
+     * @param className
+     * @param msg
+     */
     public void error(String className, String msg)
     {
-        //        if (loggingLevel.ordinal() >= Level.error.ordinal())
-        //        {
-        //            logError(className, msg);
-        //        }
         if (printLevel.ordinal() > LogLevel.error.ordinal())
         {
             printError(className, msg);
         }
     }
 
+    /**
+     * Log a warning message.
+     * 
+     * @param className
+     * @param msg
+     */
     public void warning(String className, String msg)
     {
-        //        if (loggingLevel.ordinal() >= Level.warning.ordinal())
-        //        {
-        //            logWarning(className, msg);
-        //        }
         if (printLevel.ordinal() >= LogLevel.warning.ordinal())
         {
             printWarning(className, msg);
         }
     }
 
+    /**
+     * Log an informational message.
+     * 
+     * @param className
+     * @param msg
+     */
     public void info(String className, String msg)
     {
-        //        if (loggingLevel.ordinal() >= Level.info.ordinal())
-        //        {
-        //            logInfo(className, msg);
-        //        }
         if (printLevel.ordinal() >= LogLevel.info.ordinal())
         {
             printInfo(className, msg);
         }
     }
 
+    /**
+     * Log a verbose message.
+     * 
+     * @param className
+     * @param msg
+     */
     public void verbose(String className, String msg)
     {
-        //        if (loggingLevel.ordinal() >= Level.verbose.ordinal())
-        //        {
-        //            logVerbose(className, msg);
-        //        }
         if (printLevel.ordinal() >= LogLevel.verbose.ordinal())
         {
             printVerbose(className, msg);
         }
     }
 
+    /**
+     * Log a debugging message.
+     * 
+     * @param className
+     * @param msg
+     */
     public void debug(String className, String msg)
     {
         if (printLevel.ordinal() >= LogLevel.debug.ordinal())
@@ -105,31 +131,9 @@ public class MyLog
     }
 
 
-    //// private methods
-
-    // logging methods
-
-    //    private void logError(String className, String msg)
-    //    {
-    //        //TODO: log
-    //    }
-    //
-    //    private void logWarning(String className, String msg)
-    //    {
-    //        //TODO: log
-    //    }
-    //
-    //    private void logInfo(String className, String msg)
-    //    {
-    //        //TODO: log
-    //    }
-    //
-    //    private void logVerbose(String className, String msg)
-    //    {
-    //        //TODO: log
-    //    }
-
-    // debugging methods
+    ///////////////////////////////////////////////////////
+    ////    console logging methods
+    ///////////////////////////////////////////////////////
 
     private void printError(String className, String msg)
     {
@@ -173,8 +177,43 @@ public class MyLog
 
     //    private void printSubsequent(String className, String msg)
     //    {
+    //        //TODO: Better printing of multi-line messages
     //        System.out.println(String.format(FORMAT_SUBSEQUENT, msg));
     //    }
 
+
+    ///////////////////////////////////////////////////////
+    ////    TODO: database logging methods
+    ///////////////////////////////////////////////////////
+
+
+    ///////////////////////////////////////////////////////
+    ////    TODO: file logging methods
+    ///////////////////////////////////////////////////////
+
+    //    private void fileLogError(String className, String msg)
+    //    {
+    //        
+    //    }
+    //
+    //    private void fileLogWarning(String className, String msg)
+    //    {
+    //        
+    //    }
+    //
+    //    private void fileLogInfo(String className, String msg)
+    //    {
+    //        
+    //    }
+    //
+    //    private void fileLogVerbose(String className, String msg)
+    //    {
+    //        
+    //    }
+    //
+    //    private void fileLogDebug(String className, String msg)
+    //    {
+    //
+    //    }
 
 }
